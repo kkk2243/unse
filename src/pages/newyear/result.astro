@@ -1,0 +1,105 @@
+---
+import Base from '../../layouts/Base.astro';
+import ResultShell from '../../components/ResultShell.astro';
+import { DEFAULT_YEAR } from '../../data/reading';
+---
+
+<Base title="신년운세 결과" noindex back="/newyear/" headerTitle={`${DEFAULT_YEAR} 신년운세`}>
+  <ResultShell
+    id="newyear"
+    inputPath="/newyear/"
+    inputLabel="신년운세 보러 가기"
+    head="신년 부적"
+    seal="新年"
+    chars={['monkey']}
+    theme="money"
+    shareCampaign="newyear"
+  />
+</Base>
+
+<script>
+  import { getPending, currentProfile, honor } from '../../lib/profile';
+  import { calcSaju } from '../../lib/saju';
+  import { yearReading } from '../../lib/reading';
+  import { fillTalisman, replayReveal } from '../../lib/talisman-dom';
+  import { updateShare } from '../../lib/share';
+  import { block, paras, catSummary, catBlocks, luckyHtml, monthChart } from '../../lib/render';
+  import { track, escapeHtml as e } from '../../lib/ui';
+  import { DEFAULT_YEAR, YEARS, ZODIAC_SLUG } from '../../data/reading';
+  import { BRANCHES, ELEMENTS } from '../../data/saju';
+
+  const q = Number(new URLSearchParams(location.search).get('year'));
+  const pend = getPending('year') ?? (currentProfile() ? { kind: 'year', a: currentProfile()!, year: q || DEFAULT_YEAR } : null);
+  const year = YEARS.includes(pend?.year ?? 0) ? pend!.year! : YEARS.includes(q) ? q : DEFAULT_YEAR;
+  const s = pend ? calcSaju(pend.a) : null;
+  if (!pend || !s || typeof s === 'string') {
+    document.getElementById('r-empty')!.hidden = false;
+  } else {
+    const r = yearReading(s, year, pend.a.name);
+    const name = honor(pend.a.name);
+    const animal = ZODIAC_SLUG[s.yearBranch];
+    document.title = `${year}년 신년운세 | 사주 연구원`;
+    const bestCat = [...r.cats].sort((a, b) => b.stars - a.stars)[0];
+    const card = {
+      kicker: `${name}의 ${year}년, ${r.info.animal}의 해`,
+      name: r.grade.name === '대길' ? '크게 웃는 한 해' : r.grade.name === '길' ? '기회가 열리는 한 해' : r.grade.name === '평' ? '차곡차곡 쌓는 한 해' : '다지며 가는 한 해',
+      big: `${r.score}점`,
+      line: `가장 좋은 운은 ${bestCat.name}, 가장 좋은 달은 ${[...r.best].sort((a, b) => a - b).join('월과 ')}월이에요.`,
+      rows: [
+        ['올해의 기운', `${r.stemGod}의 해`],
+        ['행운의 색', r.lucky.color],
+        ...(r.samjae ? ([['삼재', r.samjae]] as [string, string][]) : []),
+      ] as [string, string][],
+      seal: r.grade.hanja,
+      scene: { chars: [animal, r.info.char], theme: 'money' as const, mood: r.score >= 64 ? ('happy' as const) : ('normal' as const) },
+    };
+    const cardEl = document.getElementById('r-card')!;
+    fillTalisman(cardEl, card);
+    document.getElementById('r-body')!.hidden = false;
+    replayReveal(cardEl);
+
+    const monthList = `<ol class="mt-4 divide-y divide-[var(--line)]">${r.months
+      .map(
+        (m) => `<li class="flex items-start gap-3 py-2.5"><span class="w-9 flex-none font-display text-[16px] font-extrabold ${r.best.includes(m.month) ? 'text-jusa' : ''}">${m.month}월</span>
+        <span class="flex-1 text-[15px] leading-snug">${e(m.text)}</span><span class="font-display text-[15px] font-bold text-ink-2">${m.score}</span></li>`,
+      )
+      .join('')}</ol>`;
+
+    const yearBlock = block(
+      `${year}년 총운`,
+      `<div class="score-ring"><span class="font-display text-[40px] font-extrabold text-jusa">${r.score}</span><span class="font-bold">점</span><span class="tag ml-2">${r.grade.name}(${r.grade.hanja})</span></div>
+       <p class="mt-2 text-[14px] text-ink-2">${e(r.info.line)}</p>
+       ${paras([r.theme, r.relText])}`,
+      'newyear',
+    );
+    const zodiacBlock = block(
+      `${BRANCHES[s.yearBranch].animal}띠의 ${year}년`,
+      paras([r.zodiacText, ...(r.samjaeText ? [r.samjaeText] : [])]),
+      'zodiac',
+      r.samjae ? `<span class="tag tag-red">${r.samjae}</span>` : '',
+    );
+    const months = block(
+      '월별 운세',
+      `<p class="text-[14.5px] text-ink-2">진한 막대가 가장 좋은 두 달이에요. 달마다의 풀이는 아래에 있어요.</p>${monthChart(r.months, r.best)}${monthList}
+       <p class="mt-3 text-[14px] text-ink-2">조심할 달: ${r.worst.map((m) => `${m}월`).join(', ')}. 큰 결정은 이 달을 피하면 좋아요.</p>`,
+      'date',
+    );
+    const lucky = block(
+      `${year}년 행운 아이템`,
+      luckyHtml(r.lucky) +
+        `<p class="mt-3 text-[14px] text-ink-2">${e(name)}에게 도움이 되는 ${ELEMENTS[r.lucky.element].name}(${ELEMENTS[r.lucky.element].hanja}) 기운이에요. 두 번째로 좋은 기운은 ${ELEMENTS[r.lucky2.element].name}(${r.lucky2.color})이에요.</p>`,
+      'clover',
+    );
+    const other = YEARS.find((y) => y !== year)!;
+    document.getElementById('r-sections')!.innerHTML = [yearBlock, catSummary(r.cats), zodiacBlock, months, catBlocks(r.cats), lucky].join('');
+    document.getElementById('r-after')!.innerHTML = `<a href="/newyear/?year=${other}" class="btn btn-line btn-block">${other}년 운세도 보기</a><a href="/saju/" class="btn btn-hwang btn-block">타고난 사주 풀이 보기</a>`;
+
+    updateShare(document.getElementById('r-share')!, {
+      title: `내 ${year}년 운세 ${r.score}점, ${card.name}`,
+      text: `${BRANCHES[s.yearBranch].animal}띠 ${name}의 ${year}년. 생일만 넣으면 나도 볼 수 있어요`,
+      image: new URL(`/og/year/${year}-${animal}.png`, location.origin).href,
+      talisman: { ...card, head: cardEl.querySelector('.t-head')!.textContent!, foot: cardEl.querySelector('.t-foot')!.textContent! },
+    });
+    track('test_complete', { test: `newyear-${year}`, result: String(r.score) });
+  }
+</script>

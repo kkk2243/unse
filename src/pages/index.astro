@@ -1,0 +1,224 @@
+---
+import Base from '../layouts/Base.astro';
+import TestList from '../components/TestList.astro';
+import WeekStamps from '../components/WeekStamps.astro';
+import AdSlot from '../components/AdSlot.astro';
+import { catalogById, byCategory } from '../data/catalog';
+import { SITE } from '../config/site';
+import { sceneSvg, charSvg } from '../art/characters';
+import { iconSvg } from '../art/icons';
+import { DEFAULT_YEAR, YEAR_INFO, ZODIAC_BRANCHES, ZODIAC_SLUG } from '../data/reading';
+import { BRANCHES } from '../data/saju';
+import { samjae, yearPillar } from '../lib/saju';
+
+const menu = ['newyear', 'fortune-today', 'fortune-tomorrow', 'fortune-date', 'saju', 'gunghap', 'ohaeng', 'zodiac', 'name-match'].map(catalogById);
+const tests = ['animal', 'mbti-test', 'group', 'mbti-match', 'name-mbti', 'mbti-types'].map(catalogById);
+const loves = byCategory('love');
+const yb = yearPillar(DEFAULT_YEAR)[1];
+const info = YEAR_INFO[DEFAULT_YEAR];
+
+const banners = [
+  {
+    href: '/newyear/',
+    chip: `${DEFAULT_YEAR} 신년운세`,
+    title: `${info.animal}의 해, 나의 한 해는?`,
+    sub: '달마다 달라지는 운의 흐름과 삼재까지',
+    bg: '#ffd6c2',
+    art: sceneSvg({ chars: [info.char], theme: 'money', plain: true }),
+  },
+  {
+    href: '/gunghap/',
+    chip: '사주 궁합',
+    title: '우리 둘, 사주로 보면 몇 점일까?',
+    sub: '배우자 자리와 띠 궁합까지 꼼꼼하게',
+    bg: '#ffdbe5',
+    art: sceneSvg({ chars: ['rabbit', 'tiger'], theme: 'love', plain: true }),
+  },
+  {
+    href: '/love/group/',
+    chip: '단톡방 궁합',
+    title: '우리 모임에서 나는 어떤 역할?',
+    sub: '친구들 MBTI로 그리는 케미 지도',
+    bg: '#e2e6ff',
+    art: sceneSvg({ chars: ['fox', 'dog', 'cat', 'pig'], theme: 'group', plain: true }),
+  },
+];
+
+const ld = [
+  { '@context': 'https://schema.org', '@type': 'WebSite', name: SITE.name, url: Astro.site!.href, description: SITE.description, inLanguage: 'ko-KR' },
+];
+---
+
+<Base jsonLd={ld}>
+  <div class="col pt-2">
+    <div class="flex items-end justify-between">
+      <h1 class="text-[26px] font-extrabold tracking-tight">운세</h1>
+      <a href="/me/" class="text-[14px] font-semibold text-ink-2" id="who-chip">내 정보 등록하기</a>
+    </div>
+
+    <section class="mt-3" aria-label="추천">
+      <div class="banner-track" id="banners">
+        {
+          banners.map((b) => (
+            <a href={b.href} class="banner" style={`background:${b.bg}`}>
+              <span class="art" set:html={b.art} />
+              <span class="banner-chip">{b.chip}</span>
+              <span>
+                <span class="banner-title block">{b.title}</span>
+                <span class="banner-sub block">{b.sub}</span>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+      <div class="dots" id="banner-dots" aria-hidden="true">{banners.map((_, i) => <i class={i === 0 ? 'on' : ''} />)}</div>
+    </section>
+
+    <section class="card mt-3" aria-labelledby="menu-title">
+      <h2 id="menu-title" class="card-title">생년월일로 보는 정통 운세</h2>
+      <p class="card-sub">사주 여덟 글자와 일진, 세운으로 풀어 드려요</p>
+      <nav class="menu-grid">
+        {
+          menu.map((m) => (
+            <a href={m.path}>
+              <span class="ico" set:html={iconSvg(m.icon, 34)} />
+              {m.short}
+            </a>
+          ))
+        }
+      </nav>
+    </section>
+
+    <section class="card" aria-labelledby="stamp-title">
+      <div class="flex items-center justify-between">
+        <h2 id="stamp-title" class="card-title">이번 주 출석 도장</h2>
+        <span class="tag">매일 1개</span>
+      </div>
+      <div class="mt-4"><WeekStamps size="md" /></div>
+      <a href="/fortune/today/" class="btn btn-hwang btn-block mt-4">오늘 운세 보고 도장 받기</a>
+    </section>
+
+    <section class="card" aria-labelledby="test-title">
+      <div class="flex items-baseline justify-between">
+        <h2 id="test-title" class="card-title">매일 해도 재밌는 테스트</h2>
+        <a href="/category/test/" class="text-[14px] font-semibold text-ink-2">전체 보기</a>
+      </div>
+      <div class="hscroll">
+        {
+          tests.map((t) => (
+            <a href={t.path} class="tile">
+              <span class="tile-art" set:html={sceneSvg({ chars: t.chars, theme: t.theme })} />
+              <span class="tile-title">{t.title}</span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <AdSlot name="list-infeed" format="fluid" />
+
+    <section class="card" aria-labelledby="zodiac-title">
+      <div class="flex items-baseline justify-between">
+        <h2 id="zodiac-title" class="card-title">{DEFAULT_YEAR}년 띠별 운세</h2>
+        <a href="/zodiac/" class="text-[14px] font-semibold text-ink-2">2027년 보기</a>
+      </div>
+      <p class="card-sub">{info.name}, {info.animal}의 해예요. 내 띠를 눌러 보세요.</p>
+      <ul class="zgrid mt-4">
+        {
+          ZODIAC_BRANCHES.map((b) => {
+            const sj = samjae(b, yb);
+            return (
+              <li>
+                <a href={`/zodiac/${DEFAULT_YEAR}/${ZODIAC_SLUG[b]}/`}>
+                  <span class="zface" set:html={charSvg(ZODIAC_SLUG[b], 'happy')} />
+                  <span class="text-[13.5px] font-semibold">{BRANCHES[b].animal}띠</span>
+                  {sj && <span class="tag tag-red zsj">삼재</span>}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </section>
+
+    <section class="card" aria-labelledby="love-title">
+      <div class="flex items-baseline justify-between">
+        <h2 id="love-title" class="card-title">궁합 모아 보기</h2>
+        <a href="/category/love/" class="text-[14px] font-semibold text-ink-2">전체 보기</a>
+      </div>
+      <div class="mt-1"><TestList items={loves} /></div>
+    </section>
+
+    <section class="card" aria-labelledby="about-title">
+      <h2 id="about-title" class="card-title">{SITE.name}은 이런 곳이에요</h2>
+      <p class="mt-2 text-[15px] leading-relaxed text-ink-2">
+        만세력으로 계산한 사주 여덟 글자와 그날, 그해의 기운을 바탕으로 운세를 풀어 드려요. 결과는 귀여운 부적 카드로 나와서 저장하거나 단톡방에
+        바로 보낼 수 있어요. 이름과 생년월일은 서버에 보내지 않고 지금 보고 있는 기기 안에서만 계산해요.
+      </p>
+      <a href="/about/" class="mt-3 inline-block text-[15px] font-semibold underline underline-offset-4">사이트 소개 읽기</a>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .zgrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px 4px;
+  }
+  .zgrid a {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 4px 0;
+    border-radius: 14px;
+  }
+  .zgrid a:hover {
+    background: var(--wash);
+  }
+  .zface {
+    width: 58px;
+    height: 58px;
+  }
+  .zface :global(svg) {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .zsj {
+    position: absolute;
+    top: 0;
+    right: 4px;
+    font-size: 10.5px;
+    padding: 1px 5px;
+  }
+</style>
+
+<script>
+  import { currentProfile, honor } from '../lib/profile';
+  const p = currentProfile();
+  const chip = document.getElementById('who-chip')!;
+  if (p) chip.innerHTML = `<span class="text-ink-3">선택</span> <b class="text-ink"></b> ⇄`;
+  if (p) chip.querySelector('b')!.textContent = honor(p.name);
+
+  // 배너 자동 넘김 + 점 표시
+  const track = document.getElementById('banners')!;
+  const dots = [...document.querySelectorAll<HTMLElement>('#banner-dots i')];
+  let idx = 0;
+  const update = () => {
+    idx = Math.round(track.scrollLeft / track.clientWidth);
+    dots.forEach((d, i) => d.classList.toggle('on', i === idx));
+  };
+  track.addEventListener('scroll', () => requestAnimationFrame(update), { passive: true });
+  let paused = false;
+  track.addEventListener('pointerdown', () => (paused = true));
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    setInterval(() => {
+      if (paused || document.hidden) return;
+      const next = (idx + 1) % dots.length;
+      track.scrollTo({ left: next * track.clientWidth, behavior: 'smooth' });
+    }, 4500);
+  }
+</script>

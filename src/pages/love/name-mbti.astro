@@ -1,0 +1,159 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Gate from '../../components/Gate.astro';
+import { catalogById } from '../../data/catalog';
+import Talisman from '../../components/Talisman.astro';
+import ShareBar from '../../components/ShareBar.astro';
+import Faq from '../../components/Faq.astro';
+import Related from '../../components/Related.astro';
+import Disclaimer from '../../components/Disclaimer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import MbtiSelect from '../../components/MbtiSelect.astro';
+import { faqLd } from '../../lib/seo';
+import { MBTI_CODES } from '../../data/mbti/types';
+import { mbtiScore } from '../../data/mbti/compat';
+
+// 화면 계산용 MBTI 점수표 (16×16)
+const table = Object.fromEntries(MBTI_CODES.map((a) => [a, Object.fromEntries(MBTI_CODES.map((b) => [b, mbtiScore(a, b)]))]));
+
+const item = catalogById('name-mbti');
+const faq = [
+  { q: '종합 점수는 어떻게 나오나요?', a: '이름 궁합 퍼센트를 40%, MBTI 궁합 점수를 60% 비율로 합쳐서 계산해요.' },
+  { q: 'MBTI를 모르면 어떻게 하나요?', a: '간단 MBTI 검사로 3분 만에 확인할 수 있어요. 상대방 유형을 모른다면 이름 궁합만 따로 볼 수도 있어요.' },
+  { q: '입력한 이름은 저장되나요?', a: '아니요. 이름과 유형은 지금 쓰는 브라우저 안에서만 계산하고 어디에도 보내지 않아요.' },
+];
+---
+
+<Base
+  title="이름+MBTI 궁합 – 종합 궁합 점수"
+  description="이름 획수 궁합과 MBTI 궁합을 합친 종합 궁합 점수. 두 사람의 이름과 MBTI를 넣으면 이름 궁합, 성격 궁합, 종합 점수를 한 번에 보여드려요."
+  ogImage="/og/test-name-mbti.png"
+  crumbs={[{ name: '궁합', path: '/category/love/' }, { name: '이름+MBTI 궁합', path: '/love/name-mbti/' }]}
+  jsonLd={[faqLd(faq)]}
+>
+  <div class="col pt-2">
+    <PageHero title="이름+MBTI 궁합" lead="이름 획수 궁합과 MBTI 궁합을 합쳐서 두 사람의 종합 점수를 내 드려요." chars={item.chars} theme="love" />
+
+    <form class="card mt-3 space-y-5" id="nmb-form" novalidate>
+      <fieldset class="grid grid-cols-[1fr_120px] gap-3">
+        <legend class="field-label">나</legend>
+        <input class="field" name="a" maxlength="5" autocomplete="off" placeholder="이름" aria-label="내 이름" />
+        <MbtiSelect name="ma" id="nmb-ma" compact />
+      </fieldset>
+      <fieldset class="grid grid-cols-[1fr_120px] gap-3">
+        <legend class="field-label">상대</legend>
+        <input class="field" name="b" maxlength="5" autocomplete="off" placeholder="이름" aria-label="상대 이름" />
+        <MbtiSelect name="mb" id="nmb-mb" compact />
+      </fieldset>
+      <p class="min-h-[20px] text-[13.5px] font-semibold text-jusa" id="nmb-error" role="alert"></p>
+      <button type="submit" class="btn btn-primary btn-block !mt-1">종합 궁합 보기</button>
+    </form>
+
+    <div id="nmb-result" hidden class="mt-3">
+      <div id="nmb-card">
+        <Talisman head="종합 궁합" name="" seal="合" chars={item.chars} theme="love" headingLevel="h2" />
+      </div>
+      <section class="card mt-3">
+        <ShareBar title="이름+MBTI 궁합" text="이름과 MBTI로 보는 종합 궁합" path="/love/name-mbti/" ogImage="/og/test-name-mbti.png" campaign="name-mbti" id="nmb-share" />
+        <a id="nmb-detail" href="/mbti-match/" class="btn btn-line btn-block mt-5">MBTI 궁합 자세히 보기</a>
+      </section>
+    </div>
+
+    <AdSlot name="test-intro" />
+
+    <article class="card prose-lab">
+      <h2>이름과 성격을 같이 보는 궁합</h2>
+      <p>
+        이름 궁합은 두 이름의 획수를 번갈아 더해 나가는 전통 놀이이고, MBTI 궁합은 두 사람의 성향이 얼마나 맞물리는지를 보는 방법이에요. 이
+        페이지는 두 가지를 합쳐서 하나의 종합 점수로 보여드려요.
+      </p>
+      <p>
+        이름 궁합은 우연이 많이 섞여 있어서 비중을 40%로 두고, 성향을 바탕으로 한 MBTI 궁합에 60%를 줬어요. 두 점수가 크게 다르다면 어느 쪽이
+        더 우리 사이를 닮았는지 이야기해 보는 것도 재미있어요.
+      </p>
+    </article>
+
+    <section class="card" aria-labelledby="faq">
+      <h2 id="faq" class="card-title">자주 묻는 질문</h2>
+      <Faq items={faq} />
+    </section>
+
+    <Related id="name-mbti" />
+    <Disclaimer mbti />
+  </div>
+
+  <script type="application/json" id="mbti-table" set:html={JSON.stringify(table)} />
+  <Gate slot="overlay" />
+</Base>
+
+<script>
+  import { isHangulName, namePyramid, callName } from '../../lib/hangul';
+  import { fillTalisman, replayReveal } from '../../lib/talisman-dom';
+  import { updateShare } from '../../lib/share';
+  import { track } from '../../lib/ui';
+  import { openGate } from '../../lib/gate';
+  import { MBTI_CHAR } from '../../art/characters';
+
+  const table: Record<string, Record<string, number>> = JSON.parse(document.getElementById('mbti-table')!.textContent!);
+  const form = document.getElementById('nmb-form') as HTMLFormElement;
+  const err = document.getElementById('nmb-error')!;
+  const result = document.getElementById('nmb-result')!;
+  const card = document.getElementById('nmb-card')!;
+  const share = document.getElementById('nmb-share')!;
+  const detail = document.getElementById('nmb-detail') as HTMLAnchorElement;
+  const foot = card.querySelector('.t-foot')!.textContent!;
+
+  function tier(s: number) {
+    if (s >= 90) return { name: '천생연분', line: '이름도 성격도 서로를 가리키는 사이' };
+    if (s >= 80) return { name: '찰떡궁합', line: '어디서 만나도 금방 통할 사이' };
+    if (s >= 70) return { name: '잘 맞는 편', line: '조금씩 맞춰 가면 오래갈 사이' };
+    if (s >= 60) return { name: '노력형 궁합', line: '다른 점이 많아서 더 재밌는 사이' };
+    return { name: '롤러코스터', line: '티격태격하면서 정드는 사이' };
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const v = (n: string) => String((form.elements.namedItem(n) as HTMLInputElement).value || '').trim().replace(/\s/g, '');
+    const a = v('a');
+    const b = v('b');
+    const ma = v('ma');
+    const mb = v('mb');
+    if (!a || !b) return void (err.textContent = '두 사람의 이름을 모두 적어 주세요');
+    if (!isHangulName(a) || !isHangulName(b)) return void (err.textContent = '한글 이름만 계산할 수 있어요');
+    if (!ma || !mb) return void (err.textContent = '두 사람의 MBTI를 골라 주세요');
+    err.textContent = '';
+    await new Promise<void>((done) =>
+      openGate({ name: `${callName(a, '와')} ${b}의 `, label: '종합 궁합을 계산하고 있어요', steps: ['이름 획수를 세는 중', 'MBTI 성향을 맞춰 보는 중', '두 점수를 합치는 중'], onDone: done, chars: [MBTI_CHAR[ma], MBTI_CHAR[mb], 'owl'], test: 'name-mbti', ms: 3200 }),
+    );
+
+    const nameP = namePyramid(a, b).percent;
+    const mbtiS = table[ma][mb];
+    const total = Math.round(nameP * 0.4 + mbtiS * 0.6);
+    const t = tier(total);
+    const data = {
+      kicker: `${callName(a, '와')} ${b}`,
+      name: t.name,
+      big: `${total}점`,
+      line: t.line,
+      rows: [
+        ['이름 궁합', `${nameP}%`],
+        ['MBTI 궁합', ma === mb ? `${mbtiS}점 (같은 유형)` : `${mbtiS}점`],
+      ] as [string, string][],
+      seal: '合',
+      scene: { chars: [MBTI_CHAR[ma], MBTI_CHAR[mb]], theme: 'love' as const, mood: total >= 60 ? ('happy' as const) : ('normal' as const) },
+    };
+    fillTalisman(card, data);
+    result.hidden = false;
+    replayReveal(card);
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    detail.href = `/mbti-match/${ma.toLowerCase()}-${mb.toLowerCase()}/`;
+    detail.textContent = `${ma} × ${mb} 궁합 자세히 보기`;
+    updateShare(share, {
+      title: `우리 종합 궁합 ${total}점, ${t.name}!`,
+      text: `이름 궁합 ${nameP}%, MBTI 궁합 ${mbtiS}점`,
+      talisman: { head: card.querySelector('.t-head')!.textContent!, ...data, foot },
+    });
+    track('test_complete', { test: 'name-mbti', result: String(total) });
+  });
+</script>

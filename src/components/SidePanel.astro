@@ -1,0 +1,77 @@
+---
+// PC 화면 왼쪽 소개 영역 (1040px 이상에서만 보여요)
+import { charSvg } from '../art/characters';
+import { iconSvg } from '../art/icons';
+import { SITE } from '../config/site';
+import { DEFAULT_YEAR } from '../data/reading';
+---
+
+<aside class="side" aria-label="사이트 소개">
+  <div class="flex items-end gap-3">
+    <span class="side-owl" set:html={charSvg('owl', 'happy')} />
+    <span class="mb-3 flex gap-1.5" aria-hidden="true">
+      <span class="side-mini" set:html={charSvg('rabbit', 'happy')} />
+      <span class="side-mini" set:html={charSvg('tiger', 'happy')} />
+      <span class="side-mini" set:html={charSvg('monkey', 'happy')} />
+    </span>
+  </div>
+  <p class="mt-8 text-[19px] font-medium text-ink-2">{SITE.tagline}</p>
+  <p class="mt-2 font-display text-[44px] leading-[1.15] font-extrabold">{SITE.name}</p>
+  <ul class="mt-9 space-y-3.5 text-[16.5px] text-ink-2">
+    <li class="flex items-center gap-3"><span set:html={iconSvg('newyear', 30)} />{DEFAULT_YEAR}년 신년운세와 매일 바뀌는 오늘의 운세</li>
+    <li class="flex items-center gap-3"><span set:html={iconSvg('gunghap', 30)} />사주 궁합부터 단톡방 궁합까지</li>
+    <li class="flex items-center gap-3"><span set:html={iconSvg('me', 30)} />이름과 생일은 내 기기에만 저장</li>
+  </ul>
+  <div class="mt-10 flex gap-2">
+    <a href="/newyear/" class="btn btn-primary btn-sm">{DEFAULT_YEAR} 신년운세 보기</a>
+    <a href="/fortune/today/" class="btn btn-line btn-sm">오늘의 운세</a>
+  </div>
+  <div class="mt-auto grid grid-cols-2 gap-3 pt-12">
+    <a href="/contact/" class="side-card">
+      <b>제휴 문의</b>
+      <span>광고, 콘텐츠 제휴를 기다려요</span>
+    </a>
+    <a href="/contact/" class="side-card">
+      <b>새 운세 제안</b>
+      <span>보고 싶은 운세를 알려 주세요</span>
+    </a>
+  </div>
+</aside>
+
+<style>
+  .side-owl {
+    width: 120px;
+    height: 120px;
+    display: block;
+  }
+  .side-mini {
+    width: 46px;
+    height: 46px;
+    display: block;
+  }
+  .side :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .side li > span {
+    width: 30px;
+    height: 30px;
+    flex: none;
+  }
+  .side-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+    font-size: 13.5px;
+    color: var(--ink-3);
+  }
+  .side-card b {
+    font-size: 15px;
+    color: var(--ink);
+  }
+</style>

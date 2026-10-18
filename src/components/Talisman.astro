@@ -1,0 +1,72 @@
+---
+// 결과 부적 카드: 노란 부적 + 캐릭터 그림 + 도장.
+// 화면에서 계산하는 페이지는 빈 값으로 그려 두고 lib/talisman-dom.ts의 fillTalisman()으로 채웁니다.
+import Seal from './Seal.astro';
+import { SITE, siteFoot } from '../config/site';
+import { sceneSvg, type Theme, type Mood } from '../art/characters';
+
+interface Props {
+  head: string;
+  kicker?: string;
+  name: string;
+  big?: string;
+  line?: string;
+  keys?: string[];
+  rows?: [string, string][];
+  seal: string;
+  chars?: string[];
+  theme?: Theme;
+  mood?: Mood;
+  id?: string;
+  headingLevel?: 'h1' | 'h2';
+}
+const {
+  head,
+  kicker = '',
+  name,
+  line = '',
+  big = '',
+  keys = [],
+  rows = [],
+  seal,
+  chars = ['owl'],
+  theme = 'luck',
+  mood = 'happy',
+  id,
+  headingLevel = 'h1',
+} = Astro.props;
+const domain = siteFoot(Astro.site);
+const H = headingLevel;
+const corner = `<svg viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M2 14 V2 H14 M6 10 q0 -4 4 -4 q3 0 3 3 q0 2 -2 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+---
+
+<figure class="talisman" id={id}>
+  <div class="talisman-frame">
+    <div class="talisman-inner">
+      <span class="corner" style="left:6px;top:6px" set:html={corner} />
+      <span class="corner" style="right:6px;top:6px;transform:scaleX(-1)" set:html={corner} />
+      <p class="t-head">{SITE.name} {head}</p>
+      <div class="t-rule" aria-hidden="true"></div>
+      <div class="t-art" data-t="art" aria-hidden="true">
+        <Fragment set:html={sceneSvg({ chars, theme, mood })} />
+        <span data-t="seal"><Seal text={seal} size={58} class="t-stamp" color="var(--paper-ink)" /></span>
+      </div>
+      <p class="t-kicker" data-t="kicker">{kicker}</p>
+      <H class="t-name" data-t="name">{name}</H>
+      <p class="t-big" data-t="big">{big}</p>
+      <p class="t-line" data-t="line">{line}</p>
+      <ul class="t-keys" data-t="keys">{keys.map((k) => <li>{k}</li>)}</ul>
+      <dl class="t-rows" data-t="rows">
+        {
+          rows.map(([k, v]) => (
+            <>
+              <dt>{k}</dt>
+              <dd>{v}</dd>
+            </>
+          ))
+        }
+      </dl>
+      <p class="t-foot">{domain}</p>
+    </div>
+  </div>
+</figure>
