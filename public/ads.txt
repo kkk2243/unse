@@ -1,2 +1,1 @@
-# 애드센스 승인 후 아래 줄의 pub-0000000000000000 을 내 게시자 ID로 바꾸고 맨 앞 # 을 지우세요.
-# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
+   google.com, pub-1307758770052346, DIRECT, f08c47fec0942fa0
