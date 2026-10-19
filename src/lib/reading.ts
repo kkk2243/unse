@@ -5,6 +5,7 @@ import {
   type Cat,
   type Group,
   type Rel,
+  type TenGod,
   readPeriod,
   catStars,
   AFF,
@@ -21,6 +22,7 @@ import {
 } from './saju';
 import { STEMS, BRANCHES, ELEMENTS, type Element } from '../data/saju';
 import * as R from '../data/reading';
+import * as M from '../data/reading-more';
 import { josa } from './hangul';
 import { DAY_MASTER, DOMAINS } from '../data/saju';
 
@@ -37,6 +39,17 @@ export function fillT(text: string, kind: PeriodKind) {
   return text.replaceAll('{T은}', t.은).replaceAll('{T의}', t.의).replaceAll('{T}', t.T);
 }
 const pick = <T,>(list: T[], seed: string) => list[hashString(seed) % list.length];
+const tipOf = (cat: Cat, stars: number, seed: string) => M.CAT_TIP[cat][tierOf(stars)][hashString(seed + cat + 'tip') % 2];
+const pickN = (list: string[], n: number, seed: string) => {
+  const a = [...list];
+  const out: string[] = [];
+  let h = hashString(seed);
+  while (out.length < n && a.length) {
+    out.push(a.splice(h % a.length, 1)[0]);
+    h = Math.floor(h / 7) + 13;
+  }
+  return out;
+};
 const tierOf = (stars: number) => (stars >= 4 ? 'high' : stars >= 3 ? 'mid' : 'low') as 'high' | 'mid' | 'low';
 
 const GEN: Record<Element, Element> = { wood: 'fire', fire: 'earth', earth: 'metal', metal: 'water', water: 'wood' };
@@ -68,6 +81,7 @@ export interface CatReading {
   name: string;
   stars: number;
   text: string;
+  tip: string;
 }
 
 // ---------- 하루 운세 (오늘, 내일, 지정일) ----------
@@ -79,7 +93,7 @@ export function dayReading(s: Saju, ymd: string, kind: 'today' | 'tomorrow' | 'd
   const cats: CatReading[] = R.CAT_ORDER.map((cat) => {
     const stars = catStars(p, cat, seed);
     const c = R.CAT_TEXT[cat];
-    return { key: cat, name: R.CAT_NAME[cat], stars, text: `${fillT(c.reason[p.group], kind)} ${pick(c.tier[tierOf(stars)], seed + cat)}` };
+    return { key: cat, name: R.CAT_NAME[cat], stars, text: `${fillT(c.reason[p.group], kind)} ${pickN(c.tier[tierOf(stars)], 2, seed + cat).join(' ')}`, tip: tipOf(cat, stars, seed) };
   });
   const times = [
     { label: '오전', range: '9시~12시', h: 10 },
@@ -111,6 +125,9 @@ export function dayReading(s: Saju, ymd: string, kind: 'today' | 'tomorrow' | 'd
     rel: p.rel,
     headline: pick(R.DAY_HEADLINE[p.tone], seed + 'h'),
     total,
+    keywords: pickN(M.KEYWORDS[p.group], 3, seed + 'k'),
+    dos: pickN(M.DAY_DO[p.group], 3, seed + 'do'),
+    donts: pickN(M.DAY_DONT[p.group], 2, seed + 'dont'),
     cats,
     times,
     lucky,
@@ -127,7 +144,7 @@ export function yearReading(s: Saju, year: number, who = '') {
   const months = Array.from({ length: 12 }, (_, i) => {
     const mgz = monthPillar(year, i + 1);
     const mp = readPeriod(s, mgz, `${seed}|M${i + 1}`);
-    return { month: i + 1, gz: mgz, score: mp.score, tone: mp.tone, group: mp.group, text: R.MONTH_LINE[mp.group][mp.tone], p: mp };
+    return { month: i + 1, gz: mgz, score: mp.score, tone: mp.tone, group: mp.group, text: R.MONTH_LINE[mp.group][mp.tone], detail: `${M.MONTH_DETAIL[mp.group][mp.tone]} ${M.SEASON_LINE[i]}`, p: mp };
   });
   const avg = months.reduce((a, x) => a + x.score, 0) / 12;
   const score = Math.round(p.score * 0.6 + avg * 0.4);
@@ -149,8 +166,18 @@ export function yearReading(s: Saju, year: number, who = '') {
       name: R.CAT_NAME[cat],
       stars,
       text: `${fillT(c.reason[p.group], 'year')} ${c.tier[t][0]} ${c.tier[t][1]}${extra}`,
+      tip: tipOf(cat, stars, seed),
     };
   });
+  const first = months.slice(0, 6).reduce((a, x) => a + x.score, 0) / 6;
+  const second = months.slice(6).reduce((a, x) => a + x.score, 0) / 6;
+  const half = Math.abs(first - second) < 3 ? M.HALF_TEXT.even : first > second ? M.HALF_TEXT.first : M.HALF_TEXT.second;
+  const curD = s.daeun.find((d) => d.current);
+  const dGood = curD ? favor(s, TEN_GOD_GROUP[curD.god]) > 0 : false;
+  const yGood = favor(s, p.group) > 0;
+  const daeunMeet = curD
+    ? `지금은 ${curD.startAge}세부터 이어지는 ${curD.stem}${curD.branch} 대운을 지나고 있어요. ${M.DAEUN_MEET[dGood && yGood ? 'both' : dGood ? 'daeunOnly' : yGood ? 'yearOnly' : 'neither']}`
+    : '';
   const sj = samjae(s.yearBranch, gz[1]);
   const zodiacRel = mainRel(branchRels(s.yearBranch, gz[1]));
   const els = luckyElements(s);
@@ -168,6 +195,11 @@ export function yearReading(s: Saju, year: number, who = '') {
     samjae: sj,
     samjaeText: sj ? R.SAMJAE_TEXT[sj] : '',
     months: months.map(({ p: _p, ...rest }) => rest),
+    half,
+    daeunMeet,
+    keywords: pickN(M.KEYWORDS[p.group], 3, seed + 'k'),
+    dos: M.YEAR_DO[p.group],
+    donts: M.YEAR_DONT[p.group],
     best: sorted.slice(0, 2).map((x) => x.month),
     worst: sorted.slice(-2).map((x) => x.month).reverse(),
     cats,
@@ -194,28 +226,86 @@ export function natalReading(s: Saju, gender?: 'M' | 'F') {
   const strongEl = s.strongest;
   const DOM = DOMAINS_TEXT[me];
 
-  const sections: { key: string; title: string; paras: string[] }[] = [
+  const byLabel = (l: string) => s.pillars.find((p) => p.label === l);
+  const stageGroup = (l: string, useBranch = false) => {
+    const p = byLabel(l);
+    if (!p) return null;
+    const god = useBranch || p.stemGod === '일간' ? p.branchGod : p.stemGod;
+    return TEN_GOD_GROUP[god as TenGod];
+  };
+  const stages = (
+    [
+      ['early', stageGroup('년')],
+      ['young', stageGroup('월')],
+      ['middle', stageGroup('일', true)],
+      ['late', stageGroup('시')],
+    ] as const
+  ).filter((x) => x[1]) as unknown as ['early' | 'young' | 'middle' | 'late', Group][];
+  // 사주에 들어 있는 십신과 개수
+  const godCount = new Map<TenGod, number>();
+  for (const p of s.pillars) {
+    for (const g of [p.stemGod, p.branchGod]) if (g !== '일간') godCount.set(g as TenGod, (godCount.get(g as TenGod) ?? 0) + 1);
+  }
+  const gods = [...godCount.entries()].sort((x, y) => y[1] - x[1]);
+  const plus = M.PLUS[dominant];
+  const minus = M.MINUS[dominant];
+
+  const sections: { key: string; title: string; paras: string[]; list?: { label: string; items: string[] }[] }[] = [
     { key: 'me', title: `${dm.image}${josaE(dm.image)} 닮은 사람`, paras: dm.about },
+    {
+      key: 'ilju',
+      title: `${STEMS[s.dayStem].ko}${BRANCHES[s.dayBranch].ko}(${s.dayStem}${s.dayBranch}) 일주로 보는 나`,
+      paras: [
+        `태어난 날의 기둥, 일주는 사주에서 '나 자신'을 가장 잘 보여 주는 자리예요. 위 글자 ${s.dayStem}${josaE(STEMS[s.dayStem].ko) === '을' ? '은' : '는'} 겉으로 드러나는 나, 아래 글자 ${s.dayBranch}${josaE(BRANCHES[s.dayBranch].ko) === '을' ? '은' : '는'} 속마음과 배우자 자리를 뜻해요.`,
+        M.BRANCH_SEAT[s.dayBranch],
+        M.SEAT_GROUP[palaceGroup],
+      ],
+    },
     { key: 'strength', title: R.STRENGTH_TEXT[s.strength].name, paras: [R.STRENGTH_TEXT[s.strength].text] },
     {
       key: 'groups',
       title: '타고난 기질',
       paras: [R.GROUP_STRONG[dominant], ...(lacking.length ? [`반대로 사주에 ${lacking.map((g) => R.GROUP_LACK[g]).join(' ')}`] : [])],
+      list: [
+        { label: '이런 점이 강해요', items: plus },
+        { label: '이런 점은 챙겨 주세요', items: minus },
+      ],
     },
-    { key: 'love', title: '연애운', paras: [DOM.love, R.LOVE_NATAL[dominant]] },
+    {
+      key: 'gods',
+      title: '내 사주 속 십신',
+      paras: [
+        '십신은 나(일간)를 기준으로 다른 글자들이 어떤 관계인지 열 가지로 나눈 거예요. 많이 가진 십신일수록 내 성격과 삶에 크게 드러나요.',
+        ...gods.slice(0, 4).map(([g, n]) => `${g} ${n}개: ${M.TEN_GOD_DESC[g]}`),
+      ],
+    },
+    {
+      key: 'stages',
+      title: '인생 시기별 흐름',
+      paras: [
+        '사주의 네 기둥은 각각 인생의 시기를 뜻해요. 태어난 해는 초년, 달은 청년, 날은 중년, 시간은 말년을 보여 줘요.',
+        ...stages.map(([k, g]) => `${M.STAGE[k].label} (${M.STAGE[k].age}): ${M.STAGE[k].text[g]}`),
+        ...(s.hasTime ? [] : ['태어난 시간을 모르면 말년운은 보지 않아요. 시간을 넣으면 더 자세한 풀이가 나와요.']),
+      ],
+    },
+    { key: 'love', title: '연애운', paras: [DOM.love, R.LOVE_NATAL[dominant], M.GOOD_MATCH[me]] },
     { key: 'marriage', title: '결혼운', paras: [R.SPOUSE_STAR[tier3(spouseCount)], R.MARRIAGE_PALACE[palaceGroup]] },
-    { key: 'money', title: '재물운', paras: [DOM.money, R.WEALTH_NATAL[tier3(G.wealth)]] },
-    { key: 'work', title: '직업·직장운', paras: [DOM.work, R.CAREER[dominant]] },
+    { key: 'money', title: '재물운', paras: [DOM.money, R.WEALTH_NATAL[tier3(G.wealth)], M.MONEY_TIP[dominant]] },
+    { key: 'work', title: '직업·직장운', paras: [DOM.work, R.CAREER[dominant], M.JOBS[me]] },
     { key: 'business', title: '사업운', paras: [R.BUSINESS[bizTier], ...(G.self >= 3 ? [R.BUSINESS_PARTNER] : [])] },
     {
       key: 'health',
       title: '건강운',
-      paras: [R.HEALTH_WEAK[s.weakest], ...(s.counts[strongEl] >= 4 ? [R.HEALTH_STRONG[strongEl]] : []), '건강 풀이는 재미로 보는 생활 팁이에요. 몸이 불편하면 꼭 병원에서 진료를 받으세요.'],
+      paras: [R.HEALTH_WEAK[s.weakest], ...(s.counts[strongEl] >= 4 ? [R.HEALTH_STRONG[strongEl]] : []), M.HEALTH_HABIT[s.weakest], '건강 풀이는 재미로 보는 생활 팁이에요. 몸이 불편하면 꼭 병원에서 진료를 받으세요.'],
     },
     { key: 'study', title: '학업운', paras: [R.STUDY_NATAL[tier3(G.resource, 1, 2)]] },
-    { key: 'people', title: '대인관계운', paras: [R.PEOPLE_NATAL[tier3(G.self)]] },
+    { key: 'people', title: '대인관계운', paras: [R.PEOPLE_NATAL[tier3(G.self)], M.PEOPLE_TIP[dominant]] },
   ];
-  const daeun = s.daeun.map((d) => ({ ...d, group: TEN_GOD_GROUP[d.god], line: R.DAEUN_LINE[TEN_GOD_GROUP[d.god]], good: favor(s, TEN_GOD_GROUP[d.god]) > 0 }));
+  const daeun = s.daeun.map((d) => {
+    const g = TEN_GOD_GROUP[d.god];
+    const good = favor(s, g) > 0;
+    return { ...d, group: g, line: `${R.DAEUN_LINE[g]} ${good ? M.DAEUN_DETAIL[g].good : M.DAEUN_DETAIL[g].bad}`, good };
+  });
   return { dm, dominant, lacking, sections, daeun, lucky: luckyItems(luckyElements(s)[0], s.dayStem + s.dayBranch) };
 }
 
@@ -289,11 +379,21 @@ export function gunghapReading(a: Saju, b: Saju, rawA: string, rawB: string) {
       { label: '보완 궁합', value: pct(comp, 0, 2) },
     ],
     sections: [
+      {
+        title: '두 사람의 기질',
+        text: `${nameA}은 ${DAY_MASTER[a.dayStem].image}처럼 ${DAY_MASTER[a.dayStem].line}이에요. ${nameB}은 ${DAY_MASTER[b.dayStem].image}처럼 ${DAY_MASTER[b.dayStem].line}이에요.`,
+      },
       { title: '성격 궁합', text: elText },
       { title: '연애 스타일', text: `${nameA}은 ${R.LOVE_STYLE[ea]}, ${nameB}은 ${R.LOVE_STYLE[eb]}이에요. ${ea === eb ? '연애 방식이 닮아서 서로의 마음을 금방 알아채요.' : '연애 방식이 달라서 처음엔 낯설어도, 서로의 방식을 배워 가는 재미가 있어요.'}` },
-      { title: '결혼 궁합', text: R.GH_PALACE[palaceRel] },
+      {
+        title: '서로에게 바라는 것',
+        text: `${nameA}은 ${M.GH_WANT[ea]} ${nameB}은 ${M.GH_WANT[eb]} ${nameA}에게는 ${M.GH_SAY[ea]}, ${nameB}에게는 ${M.GH_SAY[eb]} 같은 한마디가 큰 힘이 돼요.`,
+      },
+      { title: '다툼 패턴과 화해법', text: M.GH_FIGHT[ea === eb ? 'same' : GEN[ea] === eb || GEN[eb] === ea ? 'gen' : 'ctrl'] },
+      { title: '결혼 궁합', text: `${R.GH_PALACE[palaceRel]} ${M.GH_LIFE[palaceRel]}` },
       { title: '띠 궁합', text: R.GH_ZODIAC[zRel].replaceAll('{za}', za).replaceAll('{zb}', zb) },
       { title: '서로 채워 주는 기운', text: compText },
+      { title: '함께하면 좋은 데이트', text: M.GH_DATE[a.weakest === b.weakest ? a.weakest : GEN[ea] === eb ? eb : GEN[eb] === ea ? ea : a.weakest] },
       { title: '연구원의 조언', text: tier.advice },
     ],
     palaceRel,

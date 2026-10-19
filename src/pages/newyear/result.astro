@@ -23,7 +23,7 @@ import { DEFAULT_YEAR } from '../../data/reading';
   import { yearReading } from '../../lib/reading';
   import { fillTalisman, replayReveal } from '../../lib/talisman-dom';
   import { updateShare } from '../../lib/share';
-  import { block, paras, catSummary, catBlocks, luckyHtml, monthChart } from '../../lib/render';
+  import { block, paras, catSummary, catBlocks, luckyHtml, monthChart, listHtml, keywordsHtml } from '../../lib/render';
   import { track, escapeHtml as e } from '../../lib/ui';
   import { DEFAULT_YEAR, YEARS, ZODIAC_SLUG } from '../../data/reading';
   import { BRANCHES, ELEMENTS } from '../../data/saju';
@@ -60,8 +60,8 @@ import { DEFAULT_YEAR } from '../../data/reading';
 
     const monthList = `<ol class="mt-4 divide-y divide-[var(--line)]">${r.months
       .map(
-        (m) => `<li class="flex items-start gap-3 py-2.5"><span class="w-9 flex-none font-display text-[16px] font-extrabold ${r.best.includes(m.month) ? 'text-jusa' : ''}">${m.month}월</span>
-        <span class="flex-1 text-[15px] leading-snug">${e(m.text)}</span><span class="font-display text-[15px] font-bold text-ink-2">${m.score}</span></li>`,
+        (m) => `<li class="flex items-start gap-3 py-3"><span class="w-9 flex-none font-display text-[16px] font-extrabold ${r.best.includes(m.month) ? 'text-jusa' : ''}">${m.month}월</span>
+        <span class="flex-1"><span class="block text-[15px] font-semibold leading-snug">${e(m.text)}</span><span class="mt-1 block text-[14.5px] leading-relaxed text-ink-2">${e(m.detail)}</span></span><span class="font-display text-[15px] font-bold text-ink-2">${m.score}</span></li>`,
       )
       .join('')}</ol>`;
 
@@ -69,7 +69,7 @@ import { DEFAULT_YEAR } from '../../data/reading';
       `${year}년 총운`,
       `<div class="score-ring"><span class="font-display text-[40px] font-extrabold text-jusa">${r.score}</span><span class="font-bold">점</span><span class="tag ml-2">${r.grade.name}(${r.grade.hanja})</span></div>
        <p class="mt-2 text-[14px] text-ink-2">${e(r.info.line)}</p>
-       ${paras([r.theme, r.relText])}`,
+       ${paras([r.theme, r.relText, r.half, ...(r.daeunMeet ? [r.daeunMeet] : [])])}`,
       'newyear',
     );
     const zodiacBlock = block(
@@ -84,6 +84,11 @@ import { DEFAULT_YEAR } from '../../data/reading';
        <p class="mt-3 text-[14px] text-ink-2">조심할 달: ${r.worst.map((m) => `${m}월`).join(', ')}. 큰 결정은 이 달을 피하면 좋아요.</p>`,
       'date',
     );
+    const plan = block(
+      `${year}년 실천 노트`,
+      keywordsHtml(r.keywords) + listHtml('올해 해 보면 좋은 일', r.dos) + listHtml('올해 조심할 일', r.donts, true),
+      'clover',
+    );
     const lucky = block(
       `${year}년 행운 아이템`,
       luckyHtml(r.lucky) +
@@ -91,7 +96,7 @@ import { DEFAULT_YEAR } from '../../data/reading';
       'clover',
     );
     const other = YEARS.find((y) => y !== year)!;
-    document.getElementById('r-sections')!.innerHTML = [yearBlock, catSummary(r.cats), zodiacBlock, months, catBlocks(r.cats), lucky].join('');
+    document.getElementById('r-sections')!.innerHTML = [yearBlock, catSummary(r.cats), plan, zodiacBlock, months, catBlocks(r.cats), lucky].join('');
     document.getElementById('r-after')!.innerHTML = `<a href="/newyear/?year=${other}" class="btn btn-line btn-block">${other}년 운세도 보기</a><a href="/saju/" class="btn btn-hwang btn-block">타고난 사주 풀이 보기</a>`;
 
     updateShare(document.getElementById('r-share')!, {

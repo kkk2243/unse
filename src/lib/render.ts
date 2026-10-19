@@ -18,9 +18,22 @@ export function block(title: string, body: string, icon?: string, right = '') {
 
 export const paras = (list: string[]) => list.map((p) => `<p class="mt-2 first:mt-0">${e(p)}</p>`).join('');
 
+export const tipBox = (label: string, text: string) =>
+  `<div class="mt-3 rounded-[14px] bg-[var(--wash)] px-4 py-3"><p class="text-[13px] font-bold text-jusa">${e(label)}</p><p class="mt-1 text-[15px]">${e(text)}</p></div>`;
+
 export function catBlocks(cats: CatReading[]) {
-  return cats.map((c) => block(c.name, paras([c.text]), CAT_ICON[c.key], starsHtml(c.stars))).join('');
+  return cats.map((c) => block(c.name, paras([c.text]) + tipBox('이렇게 해 보세요', c.tip), CAT_ICON[c.key], starsHtml(c.stars))).join('');
 }
+
+// 좋은 일 / 피할 일 / 장점 목록
+export function listHtml(label: string, items: string[], bad = false) {
+  return `<h4 class="mt-4 text-[14px] font-bold ${bad ? 'text-jusa' : 'text-ink-2'}">${e(label)}</h4>
+    <ul class="mt-2 space-y-1.5">${items
+      .map((x) => `<li class="flex gap-2 text-[15px]"><span class="mt-[9px] h-1.5 w-1.5 flex-none rounded-full ${bad ? 'bg-[var(--jusa)]' : 'bg-[var(--ink-3)]'}"></span><span>${e(x)}</span></li>`)
+      .join('')}</ul>`;
+}
+
+export const keywordsHtml = (words: string[]) => `<div class="flex flex-wrap gap-2">${words.map((w) => `<span class="tag">#${e(w)}</span>`).join('')}</div>`;
 
 // 분야별 별점 요약표
 export function catSummary(cats: CatReading[]) {

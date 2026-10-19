@@ -61,7 +61,7 @@ import ResultShell from '../../components/ResultShell.astro';
       .join('')}</ul>`;
     const who = (n: string, s: typeof a) =>
       `<div class="rounded-[16px] bg-[var(--wash)] p-4"><p class="font-bold">${e(n)}</p><p class="mt-1 text-[14px] text-ink-2">${BRANCHES[s.yearBranch].animal}띠, 일간 ${STEMS[s.dayStem].ko}${ELEMENTS[STEMS[s.dayStem].el].ko}(${s.dayStem})</p><p class="text-[14px] text-ink-2">일지 ${BRANCHES[s.dayBranch].ko}(${s.dayBranch})</p></div>`;
-    const ICON: Record<string, string> = { '성격 궁합': 'gunghap', '연애 스타일': 'heart', '결혼 궁합': 'ring', '띠 궁합': 'zodiac', '서로 채워 주는 기운': 'ohaeng', '연구원의 조언': 'saju' };
+    const ICON: Record<string, string> = { '두 사람의 기질': 'types', '서로에게 바라는 것': 'heart', '다툼 패턴과 화해법': 'group', '함께하면 좋은 데이트': 'clover', '성격 궁합': 'gunghap', '연애 스타일': 'heart', '결혼 궁합': 'ring', '띠 궁합': 'zodiac', '서로 채워 주는 기운': 'ohaeng', '연구원의 조언': 'saju' };
     document.getElementById('r-sections')!.innerHTML = [
       block('한눈에 보기', `<div class="grid grid-cols-2 gap-2">${who(na, a)}${who(nb, b)}</div><div class="mt-5">${bars}</div>`, 'gunghap'),
       ...g.sections.map((x) => block(x.title, paras([x.text]), ICON[x.title])),

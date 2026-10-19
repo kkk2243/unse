@@ -24,7 +24,7 @@ import WeekStamps from '../../components/WeekStamps.astro';
   import { dayReading } from '../../lib/reading';
   import { fillTalisman, replayReveal } from '../../lib/talisman-dom';
   import { updateShare } from '../../lib/share';
-  import { block, paras, catSummary, catBlocks, luckyHtml } from '../../lib/render';
+  import { block, paras, catSummary, catBlocks, luckyHtml, listHtml, keywordsHtml } from '../../lib/render';
   import { markToday, streak } from '../../lib/attendance';
   import { todayKST, toast, track, escapeHtml as e } from '../../lib/ui';
   import { ZODIAC_SLUG } from '../../data/reading';
@@ -84,6 +84,7 @@ import WeekStamps from '../../components/WeekStamps.astro';
 
     const sections = [
       block(`${when}의 총운`, `<div class="score-ring"><span class="font-display text-[40px] font-extrabold text-jusa">${r.score}</span><span class="font-bold">점</span></div>${paras(r.total)}`, 'today'),
+      block(`${when}의 키워드`, keywordsHtml(r.keywords) + listHtml(`${when} 하면 좋은 일`, r.dos) + listHtml(`${when} 피하면 좋은 일`, r.donts, true), 'clover'),
       catSummary(r.cats),
       block('시간대별 흐름', timeHtml, 'clock'),
       catBlocks(r.cats),

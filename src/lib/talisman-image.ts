@@ -340,3 +340,80 @@ export async function renderTalisman(d: TalismanData): Promise<HTMLCanvasElement
 
   return canvas;
 }
+
+// 카카오톡 메시지·다른 앱 공유용 정사각형 카드 (800×800). 내 결과 + '너도 해볼래?' 문구.
+export async function renderShareCard(d: TalismanData, ask: string): Promise<HTMLCanvasElement> {
+  await ensureFonts({ ...d, line: ask });
+  const S = 800;
+  const art = d.scene ? await loadSvg(sceneSvg({ ...d.scene, size: 420 })) : null;
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = S;
+  const ctx = canvas.getContext('2d')!;
+  ctx.fillStyle = PAPER;
+  ctx.fillRect(0, 0, S, S);
+  ctx.fillStyle = noisePattern(ctx);
+  ctx.fillRect(0, 0, S, S);
+  ctx.strokeStyle = INK;
+  ctx.lineWidth = 7;
+  ctx.strokeRect(26, 26, S - 52, S - 52);
+  ctx.lineWidth = 2.5;
+  ctx.strokeRect(42, 42, S - 84, S - 84);
+
+  const cx = S / 2;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = INK;
+  ctx.font = `700 26px ${SANS}`;
+  ctx.fillText(d.head, cx, 92);
+
+  // 그림 + 도장
+  const artS = 300;
+  const artY = 112;
+  if (art) ctx.drawImage(art, cx - artS / 2, artY, artS, artS);
+  drawSeal(ctx, d.seal, cx + artS / 2 - 18, artY + artS - 44, 96);
+
+  let y = artY + artS + 22;
+  if (d.kicker) {
+    ctx.fillStyle = TEXT;
+    ctx.globalAlpha = 0.8;
+    ctx.font = `600 26px ${SANS}`;
+    ctx.fillText(d.kicker, cx, y + 26);
+    ctx.globalAlpha = 1;
+    y += 40;
+  }
+  let size = 58;
+  let lines: string[] = [];
+  for (; size >= 38; size -= 4) {
+    ctx.font = `800 ${size}px ${DISPLAY}`;
+    lines = wrap(ctx, d.name, 640);
+    if (lines.length <= (d.big ? 1 : 2)) break;
+  }
+  lines = lines.slice(0, 2);
+  ctx.fillStyle = INK;
+  ctx.font = `800 ${size}px ${DISPLAY}`;
+  lines.forEach((l, i) => ctx.fillText(l, cx, y + size + i * size * 1.18));
+  y += size + (lines.length - 1) * size * 1.18 + 10;
+  if (d.big) {
+    ctx.font = `800 84px "Hahmlet Variable", serif`;
+    ctx.fillText(d.big, cx, y + 82);
+    y += 96;
+  } else if (d.line) {
+    ctx.fillStyle = TEXT;
+    ctx.font = `500 27px ${SANS}`;
+    wrap(ctx, d.line, 600)
+      .slice(0, 2)
+      .forEach((l, i) => ctx.fillText(l, cx, y + 32 + i * 40));
+  }
+
+  // 아래 띠: 너도 해볼래?
+  const bandH = 64;
+  const bandY = S - 42 - bandH - 18;
+  ctx.fillStyle = '#1f2033';
+  ctx.beginPath();
+  ctx.roundRect(cx - 250, bandY, 500, bandH, 32);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.font = `700 28px ${SANS}`;
+  ctx.fillText(ask, cx, bandY + 42);
+  return canvas;
+}
