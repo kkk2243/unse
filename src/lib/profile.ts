@@ -84,6 +84,7 @@ export interface Pending {
   b?: Omit<Profile, 'id'>;
   date?: string;
   year?: number;
+  extra?: Record<string, string>;
 }
 export function setPending(p: Pending) {
   write('session', PENDING, p);

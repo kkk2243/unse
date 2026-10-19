@@ -424,3 +424,28 @@ export function zodiacYearReading(branch: string, year: number) {
     lucky: luckyItems(GEN_BY[bEl], branch + year),
   };
 }
+
+// ---------- 오늘의 띠별 운세 랭킹 ----------
+export function zodiacDayRanking(ymd: string) {
+  const [y, m, d] = ymd.split('-').map(Number);
+  const gz = dayPillar(y, m, d);
+  const sEl = STEMS[gz[0]].el;
+  const list = R.ZODIAC_BRANCHES.map((b) => {
+    const rel = mainRel(branchRels(b, gz[1]));
+    const bEl = BRANCHES[b].el;
+    const elPt = GEN[sEl] === bEl ? 6 : GEN[bEl] === sEl ? 2 : CTRL[sEl] === bEl ? -5 : CTRL[bEl] === sEl ? 1 : 3;
+    const score = Math.max(48, Math.min(99, Math.round(72 + REL_PT[rel] * 0.9 + elPt + ((hashString(ymd + b) % 9) - 4))));
+    return {
+      branch: b,
+      animal: BRANCHES[b].animal,
+      slug: R.ZODIAC_SLUG[b],
+      rel,
+      score,
+      line: pick(M.RANK_LINE[rel], ymd + b),
+      color: pick(M.RANK_COLORS, ymd + b + 'c'),
+      number: (hashString(ymd + b + 'n') % 9) + 1,
+    };
+  });
+  list.sort((a, b) => b.score - a.score || hashString(ymd + a.branch) - hashString(ymd + b.branch));
+  return { gz, list: list.map((x, i) => ({ ...x, rank: i + 1 })) };
+}

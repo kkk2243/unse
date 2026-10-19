@@ -64,7 +64,7 @@ async function copy(text: string) {
 // 결과가 브라우저에서 계산되는 페이지(/…/result/)는 주소만 보내면 받은 사람에게 결과가 안 보여요.
 // 그래서 이런 페이지는 '나도 해보기' 주소로 보내고, 내 결과는 이미지로 보여 줍니다.
 function isPersonal(d: ShareData) {
-  return /\/result\/$/.test(d.url);
+  return /\/result\/$/.test(d.url) || d.url === d.cta;
 }
 
 function shortHead(d: ShareData) {
@@ -76,6 +76,7 @@ export function brag(d: ShareData) {
   const t = d.talisman;
   if (!t) return { title: d.title, ask: '너도 해볼래?' };
   const tag = shortHead(d) ? `[${shortHead(d)}] ` : '';
+  if (t.big && /%$/.test(t.big)) return { title: `${tag}나는 ${t.big} 나왔어! 너는 몇 %일까?`, ask: '너는 몇 %일까? 나도 해보기' };
   if (t.big && /점$/.test(t.big)) return { title: `${tag}나는 ${t.big} 나왔어! 너는 몇 점일까?`, ask: '너는 몇 점일까? 나도 해보기' };
   return { title: `${tag}나는 '${t.name}' 나왔어! 너는 뭐 나올까?`, ask: '너는 뭐 나올까? 나도 해보기' };
 }
@@ -105,6 +106,29 @@ async function drawCard(d: ShareData): Promise<File | null> {
   } catch {
     return null;
   }
+}
+
+// 결과 카드 없이 링크 하나를 보내는 공유 (궁합 초대장 등): 카카오톡 → 휴대폰 공유 창 → 복사 순서
+export async function shareLink(o: { title: string; text: string; url: string; image: string; button: string; campaign: string }) {
+  const K = kakao();
+  if (K) {
+    K.Share.sendDefault({
+      objectType: 'feed',
+      content: { title: o.title, description: o.text, imageUrl: o.image, link: { mobileWebUrl: o.url, webUrl: o.url } },
+      buttons: [{ title: o.button, link: { mobileWebUrl: o.url, webUrl: o.url } }],
+    });
+    track('share', { method: 'kakao', content_type: o.campaign });
+    return;
+  }
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: o.title, text: `${o.title}\n${o.text}`, url: o.url });
+      track('share', { method: 'webshare', content_type: o.campaign });
+    } catch {}
+    return;
+  }
+  if (await copy(`${o.title}\n${o.url}`)) toast('초대 문구와 링크를 복사했어요. 카톡이나 문자로 붙여넣어 보내 주세요');
+  track('share', { method: 'copy', content_type: o.campaign });
 }
 
 export function readShare(el: HTMLElement): ShareData {

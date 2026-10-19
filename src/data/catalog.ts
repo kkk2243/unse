@@ -19,6 +19,76 @@ export interface CatalogItem {
 
 export const CATALOG: CatalogItem[] = [
   {
+    id: 'saju-mbti',
+    title: '사주 MBTI 싱크로율',
+    short: '사주 MBTI',
+    summary: '사주로 본 나의 MBTI와 실제 MBTI는 몇 % 같을까?',
+    path: '/saju-mbti/',
+    cats: ['saju', 'test'],
+    icon: 'sajumbti',
+    chars: ['fox', 'owl'],
+    theme: 'work',
+    seal: '同',
+    publishedAt: '2026-10-19',
+    featured: 2.5,
+  },
+  {
+    id: 'ilju',
+    title: '60갑자 일주 도감',
+    short: '일주 도감',
+    summary: '흰 용, 붉은 말처럼 태어난 날로 보는 나의 일주와 별명',
+    path: '/ilju/',
+    cats: ['saju'],
+    icon: 'ilju',
+    chars: ['dragon', 'rock'],
+    theme: 'study',
+    seal: '日柱',
+    publishedAt: '2026-10-19',
+    featured: 5.5,
+  },
+  {
+    id: 'bujeok',
+    title: '소원 부적 만들기',
+    short: '소원 부적',
+    summary: '소원을 적으면 수호 동물이 지켜 주는 휴대폰 배경화면 부적',
+    path: '/bujeok/',
+    cats: ['saju', 'test'],
+    icon: 'bujeok',
+    chars: ['owl', 'pig'],
+    theme: 'luck',
+    seal: '福',
+    publishedAt: '2026-10-19',
+    featured: 3.5,
+  },
+  {
+    id: 'zodiac-today',
+    title: '오늘의 띠별 운세 순위',
+    short: '띠별 순위',
+    summary: '오늘 운 좋은 띠 1등은? 매일 바뀌는 12띠 순위',
+    path: '/zodiac/today/',
+    cats: ['saju'],
+    icon: 'ranking',
+    chars: ['rat', 'tiger', 'dragon'],
+    theme: 'luck',
+    seal: '吉',
+    publishedAt: '2026-10-19',
+    featured: 6.5,
+  },
+  {
+    id: 'dream',
+    title: '꿈해몽 사전',
+    short: '꿈해몽',
+    summary: '뱀 꿈, 돼지 꿈, 이빨 빠지는 꿈까지 50가지 꿈 풀이',
+    path: '/dream/',
+    cats: ['saju'],
+    icon: 'dream',
+    chars: ['snake', 'pig'],
+    theme: 'night',
+    seal: '夢',
+    publishedAt: '2026-10-19',
+    featured: 4.5,
+  },
+  {
     id: 'newyear',
     title: '2028년 신년운세',
     short: '신년운세',
@@ -233,8 +303,9 @@ export function featured(n = 6) {
 export function related(currentId: string, n = 6) {
   const cur = CATALOG.find((c) => c.id === currentId);
   const same = CATALOG.filter((c) => c.id !== currentId && cur && c.cats.some((k) => cur.cats.includes(k)));
-  const rest = featured(20).filter((c) => c.id !== currentId && !same.includes(c));
-  return [...same.slice(0, 3), ...rest].slice(0, n);
+  const first = same.slice(0, 3);
+  const pool = [...featured(40), ...CATALOG].filter((c, i, arr) => c.id !== currentId && !first.includes(c) && arr.indexOf(c) === i);
+  return [...first, ...pool].slice(0, n);
 }
 
 export function catalogById(id: string) {

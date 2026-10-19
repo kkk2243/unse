@@ -203,8 +203,8 @@ body {
 /* 아이콘 메뉴 3열 */
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px 4px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px 2px;
   margin-top: 14px;
 }
 .menu-grid a {
@@ -212,9 +212,10 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  padding: 10px 2px;
+  padding: 9px 0;
   border-radius: 14px;
-  font-size: 13.5px;
+  font-size: 13px;
+  word-break: keep-all;
   font-weight: 600;
   color: var(--ink);
   text-align: center;
@@ -224,8 +225,8 @@ body {
   background: var(--wash);
 }
 .menu-grid .ico {
-  width: 52px;
-  height: 52px;
+  width: 50px;
+  height: 50px;
   display: grid;
   place-items: center;
   border-radius: 18px;
@@ -879,6 +880,7 @@ select.field {
   place-items: center;
   background: var(--wash);
 }
+.reading-head h2,
 .reading-head h3 {
   font-size: 18px;
   font-weight: 750;

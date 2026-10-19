@@ -1,0 +1,90 @@
+---
+// 사주 백과 글 본문 (블록 → HTML)
+import type { Block } from '../data/guide';
+interface Props {
+  body: Block[];
+}
+const { body } = Astro.props;
+---
+
+<div class="prose-lab guide-body">
+  {
+    body.map((b) =>
+      b[0] === 'h' ? (
+        <h2>{b[1]}</h2>
+      ) : b[0] === 'p' ? (
+        <p>{b[1]}</p>
+      ) : b[0] === 'ul' ? (
+        <ul>
+          {b[1].map((x) => (
+            <li>{x}</li>
+          ))}
+        </ul>
+      ) : b[0] === 'table' ? (
+        <div class="guide-table">
+          <table>
+            <thead>
+              <tr>
+                {b[1].head.map((h) => (
+                  <th>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {b[1].rows.map((r) => (
+                <tr>
+                  {r.map((c) => (
+                    <td>{c}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : b[0] === 'tip' ? (
+        <p class="guide-tip">{b[1]}</p>
+      ) : (
+        <a href={b[1].href} class="btn btn-primary btn-block guide-cta">
+          {b[1].label}
+        </a>
+      ),
+    )
+  }
+</div>
+
+<style>
+  .guide-table {
+    margin: 14px -4px 4px;
+    overflow-x: auto;
+  }
+  .guide-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+  .guide-table th {
+    text-align: left;
+    font-weight: 700;
+    background: var(--wash);
+    padding: 9px 10px;
+    white-space: nowrap;
+  }
+  .guide-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  .guide-tip {
+    margin-top: 16px !important;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--wash);
+    font-size: 15px;
+  }
+  .guide-cta {
+    margin-top: 26px;
+    text-decoration: none !important;
+    color: #fff !important;
+  }
+</style>

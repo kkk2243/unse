@@ -36,6 +36,12 @@ export const ICONS: Record<string, string> = {
   heart: `<path d="M24 38 c-8 -6 -15 -11 -15 -19 c0 -5 4 -8 8 -8 c3 0 5 2 7 4 c2 -2 4 -4 7 -4 c4 0 8 3 8 8 c0 8 -7 13 -15 19 z" fill="#ff6f8f" ${ST}/>`,
   clock: `<circle cx="24" cy="24" r="15" fill="#fff" ${ST}/><path d="M24 15 v9 l6 4" ${L}/><circle cx="24" cy="24" r="2" fill="${R}"/>`,
   clover: `<g fill="${G}" ${ST}><circle cx="18" cy="18" r="7"/><circle cx="30" cy="18" r="7"/><circle cx="18" cy="30" r="7"/><circle cx="30" cy="30" r="7"/></g><path d="M24 24 q4 8 10 14" ${L}/>`,
+  ilju: `<rect x="10" y="10" width="28" height="28" rx="6" fill="#c9301e" ${ST}/><rect x="14" y="14" width="20" height="20" rx="3" fill="none" stroke="#fff" stroke-width="2"/><path d="M19 19.5 h10 M24 19.5 v9 M19 28.5 h10" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>`,
+  sajumbti: `<circle cx="19" cy="24" r="11" fill="${Y}" ${ST}/><circle cx="29" cy="24" r="11" fill="${B}" fill-opacity=".85" ${ST}/><path d="M24 16.5 a11 11 0 0 1 0 15 a11 11 0 0 1 0 -15 z" fill="${G}"/><path d="M16 24 h2 M30 24 h2" ${L}/>`,
+  bujeok: `<path d="M15 6 h18 a2 2 0 0 1 2 2 v32 a2 2 0 0 1 -2 2 h-18 a2 2 0 0 1 -2 -2 v-32 a2 2 0 0 1 2 -2 z" fill="${Y}" ${ST}/><path d="M19 13 h10 M24 13 v11 M19 19 l10 5 M29 19 l-10 5" stroke="#c9301e" stroke-width="2.2" stroke-linecap="round"/><rect x="20" y="29" width="8" height="8" rx="1.5" fill="#c9301e"/>`,
+  dream: `<path d="M27 8 a14 14 0 1 0 13 19 a11 11 0 0 1 -13 -19 z" fill="${Y}" ${ST}/><path d="M10 38 a5 5 0 0 1 4 -8 a6 6 0 0 1 11 1 a4 4 0 0 1 1 8 z" fill="#fff" ${ST}/><path d="M33 9 h5 l-5 5 h5" ${L}/>`,
+  ranking: `<rect x="18" y="16" width="12" height="24" rx="2" fill="${Y}" ${ST}/><rect x="6" y="24" width="12" height="16" rx="2" fill="#e1e3ea" ${ST}/><rect x="30" y="28" width="12" height="12" rx="2" fill="${R}" ${ST}/><path d="M24 5 l1.6 3.3 3.6 .5 -2.6 2.5 .6 3.6 -3.2 -1.7 -3.2 1.7 .6 -3.6 -2.6 -2.5 3.6 -.5 z" fill="${Y}" ${ST}/>`,
+  guide: `<path d="M24 14 c-5 -4 -11 -4 -16 -2 v24 c5 -2 11 -2 16 2 c5 -4 11 -4 16 -2 v-24 c-5 -2 -11 -2 -16 2 z" fill="#fff6dd" ${ST}/><path d="M24 14 v24" ${L}/><circle cx="16" cy="22" r="3" fill="${G}"/><circle cx="32" cy="22" r="3" fill="${R}"/><path d="M12 29 h8 M28 29 h8" ${L}/>`,
   wave: `<path d="M6 30 q6 -6 12 0 t12 0 t12 0" ${L}/><path d="M6 22 q6 -6 12 0 t12 0 t12 0" ${L}/><path d="M24 8 v8 M18 11 l6 -3 6 3" ${L}/>`,
 };
 

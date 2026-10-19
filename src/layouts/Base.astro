@@ -60,6 +60,20 @@ if (crumbs.length) {
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
+    <script is:inline>
+      // 궁합 초대장(?invite=)은 광고, 통계 스크립트가 읽기 전에 주소에서 빼서 이 탭에만 보관합니다
+      (function () {
+        var u = new URL(location.href);
+        var c = u.searchParams.get('invite');
+        if (!c) return;
+        window.__sajuInvite = c;
+        try {
+          sessionStorage.setItem('saju.invite', c);
+        } catch (e) {}
+        u.searchParams.delete('invite');
+        history.replaceState(null, '', u.pathname + u.search + u.hash);
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -111,7 +125,10 @@ if (crumbs.length) {
             }
             window.gtag = gtag;
             gtag('js', new Date());
-            gtag('config', gaId);
+            // 궁합 초대장 링크(?invite=)의 개인정보가 통계로 넘어가지 않도록 주소에서 빼고 보냅니다
+            var loc = new URL(location.href);
+            loc.searchParams.delete('invite');
+            gtag('config', gaId, { page_location: loc.href });
           </script>
         </>
       )
