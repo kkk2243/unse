@@ -1,0 +1,313 @@
+import type { CategoryKey } from '../config/site';
+import type { Theme } from '../art/characters';
+
+// 사이트에 올라간 모든 콘텐츠 목록. 새 콘텐츠를 만들면 여기에 한 줄 추가하세요.
+export interface CatalogItem {
+  id: string;
+  title: string;
+  short: string; // 아이콘 메뉴에 들어갈 짧은 이름
+  summary: string;
+  path: string;
+  cats: CategoryKey[];
+  icon: string; // src/art/icons.ts
+  chars: string[]; // 대표 캐릭터 (src/art/characters.ts)
+  theme: Theme;
+  seal: string;
+  publishedAt: string;
+  featured?: number;
+}
+
+export const CATALOG: CatalogItem[] = [
+  {
+    id: 'saju-mbti',
+    title: '사주 MBTI 싱크로율',
+    short: '사주 MBTI',
+    summary: '사주로 본 나의 MBTI와 실제 MBTI는 몇 % 같을까?',
+    path: '/saju-mbti/',
+    cats: ['saju', 'test'],
+    icon: 'sajumbti',
+    chars: ['fox', 'owl'],
+    theme: 'work',
+    seal: '同',
+    publishedAt: '2026-10-19',
+    featured: 2.5,
+  },
+  {
+    id: 'ilju',
+    title: '60갑자 일주 도감',
+    short: '일주 도감',
+    summary: '흰 용, 붉은 말처럼 태어난 날로 보는 나의 일주와 별명',
+    path: '/ilju/',
+    cats: ['saju'],
+    icon: 'ilju',
+    chars: ['dragon', 'rock'],
+    theme: 'study',
+    seal: '日柱',
+    publishedAt: '2026-10-19',
+    featured: 5.5,
+  },
+  {
+    id: 'bujeok',
+    title: '소원 부적 만들기',
+    short: '소원 부적',
+    summary: '소원을 적으면 수호 동물이 지켜 주는 휴대폰 배경화면 부적',
+    path: '/bujeok/',
+    cats: ['saju', 'test'],
+    icon: 'bujeok',
+    chars: ['owl', 'pig'],
+    theme: 'luck',
+    seal: '福',
+    publishedAt: '2026-10-19',
+    featured: 3.5,
+  },
+  {
+    id: 'zodiac-today',
+    title: '오늘의 띠별 운세 순위',
+    short: '띠별 순위',
+    summary: '오늘 운 좋은 띠 1등은? 매일 바뀌는 12띠 순위',
+    path: '/zodiac/today/',
+    cats: ['saju'],
+    icon: 'ranking',
+    chars: ['rat', 'tiger', 'dragon'],
+    theme: 'luck',
+    seal: '吉',
+    publishedAt: '2026-10-19',
+    featured: 6.5,
+  },
+  {
+    id: 'dream',
+    title: '꿈해몽 사전',
+    short: '꿈해몽',
+    summary: '뱀 꿈, 돼지 꿈, 이빨 빠지는 꿈까지 50가지 꿈 풀이',
+    path: '/dream/',
+    cats: ['saju'],
+    icon: 'dream',
+    chars: ['snake', 'pig'],
+    theme: 'night',
+    seal: '夢',
+    publishedAt: '2026-10-19',
+    featured: 4.5,
+  },
+  {
+    id: 'newyear',
+    title: '2028년 신년운세',
+    short: '신년운세',
+    summary: '2028 무신년, 달마다 달라지는 나의 한 해 흐름',
+    path: '/newyear/',
+    cats: ['saju'],
+    icon: 'newyear',
+    chars: ['monkey'],
+    theme: 'money',
+    seal: '新年',
+    publishedAt: '2026-10-18',
+    featured: 1,
+  },
+  {
+    id: 'fortune-today',
+    title: '오늘의 운세',
+    short: '오늘의 운세',
+    summary: '일진으로 보는 오늘 하루, 분야별 운세와 시간대 흐름',
+    path: '/fortune/today/',
+    cats: ['saju'],
+    icon: 'today',
+    chars: ['sun'],
+    theme: 'luck',
+    seal: '今日',
+    publishedAt: '2026-10-18',
+    featured: 2,
+  },
+  {
+    id: 'fortune-tomorrow',
+    title: '내일의 운세',
+    short: '내일의 운세',
+    summary: '내일 일정을 잡기 전에 미리 보는 하루 흐름',
+    path: '/fortune/tomorrow/',
+    cats: ['saju'],
+    icon: 'tomorrow',
+    chars: ['rain'],
+    theme: 'night',
+    seal: '來日',
+    publishedAt: '2026-10-18',
+  },
+  {
+    id: 'fortune-date',
+    title: '지정일 운세',
+    short: '지정일 운세',
+    summary: '면접, 소개팅, 이사 날짜의 운을 골라서 보기',
+    path: '/fortune/date/',
+    cats: ['saju'],
+    icon: 'date',
+    chars: ['owl'],
+    theme: 'work',
+    seal: '擇日',
+    publishedAt: '2026-10-18',
+  },
+  {
+    id: 'saju',
+    title: '정통 사주 풀이',
+    short: '정통 사주',
+    summary: '여덟 글자와 대운으로 읽는 연애, 결혼, 직업, 재물',
+    path: '/saju/',
+    cats: ['saju'],
+    icon: 'saju',
+    chars: ['owl'],
+    theme: 'study',
+    seal: '四柱',
+    publishedAt: '2026-10-18',
+    featured: 3,
+  },
+  {
+    id: 'gunghap',
+    title: '사주 궁합',
+    short: '사주 궁합',
+    summary: '두 사람의 일간, 배우자 자리, 띠로 보는 정통 궁합',
+    path: '/gunghap/',
+    cats: ['love', 'saju'],
+    icon: 'gunghap',
+    chars: ['rabbit', 'tiger'],
+    theme: 'love',
+    seal: '宮合',
+    publishedAt: '2026-10-18',
+    featured: 4,
+  },
+  {
+    id: 'ohaeng',
+    title: '오행 부족 진단',
+    short: '오행 진단',
+    summary: '나한테 모자란 기운과 채워 주는 색, 숫자, 음식',
+    path: '/saju/ohaeng/',
+    cats: ['saju'],
+    icon: 'ohaeng',
+    chars: ['tree', 'sun', 'sea'],
+    theme: 'study',
+    seal: '五行',
+    publishedAt: '2026-10-18',
+  },
+  {
+    id: 'zodiac',
+    title: '띠별 신년운세',
+    short: '띠별 운세',
+    summary: '열두 띠의 2027·2028년 운세와 삼재',
+    path: '/zodiac/',
+    cats: ['saju'],
+    icon: 'zodiac',
+    chars: ['tiger', 'rabbit', 'dragon', 'pig'],
+    theme: 'luck',
+    seal: '十二',
+    publishedAt: '2026-10-18',
+  },
+  {
+    id: 'name-match',
+    title: '이름 궁합',
+    short: '이름 궁합',
+    summary: '어릴 때 공책에 쓰던 그 획수 계산, 그대로',
+    path: '/love/name-match/',
+    cats: ['love'],
+    icon: 'name',
+    chars: ['cat', 'dog'],
+    theme: 'love',
+    seal: '名',
+    publishedAt: '2026-10-18',
+    featured: 5,
+  },
+  {
+    id: 'mbti-match',
+    title: 'MBTI 궁합',
+    short: 'MBTI 궁합',
+    summary: '16유형끼리 256가지 조합, 싸울 때 모습까지',
+    path: '/mbti-match/',
+    cats: ['love', 'test'],
+    icon: 'mbtimatch',
+    chars: ['monkey', 'hawk'],
+    theme: 'love',
+    seal: '緣',
+    publishedAt: '2026-10-18',
+  },
+  {
+    id: 'name-mbti',
+    title: '이름+MBTI 궁합',
+    short: '이름+MBTI',
+    summary: '이름 궁합과 MBTI 궁합을 합친 종합 점수',
+    path: '/love/name-mbti/',
+    cats: ['love', 'test'],
+    icon: 'name',
+    chars: ['fox', 'bear'],
+    theme: 'love',
+    seal: '合',
+    publishedAt: '2026-10-18',
+  },
+  {
+    id: 'group',
+    title: '단톡방 궁합',
+    short: '단톡방 궁합',
+    summary: '친구 3~8명의 MBTI로 그리는 우리 모임 케미 지도',
+    path: '/love/group/',
+    cats: ['love', 'test'],
+    icon: 'group',
+    chars: ['fox', 'dog', 'cat', 'pig'],
+    theme: 'group',
+    seal: '群',
+    publishedAt: '2026-10-18',
+    featured: 6,
+  },
+  {
+    id: 'animal',
+    title: '내 성격을 동물로 표현하면?',
+    short: '동물 테스트',
+    summary: '12문항으로 알아보는 나와 닮은 동물',
+    path: '/test/animal/',
+    cats: ['test'],
+    icon: 'animal',
+    chars: ['fox', 'whale', 'bear'],
+    theme: 'group',
+    seal: '獸',
+    publishedAt: '2026-10-18',
+    featured: 7,
+  },
+  {
+    id: 'mbti-test',
+    title: '간단 MBTI 검사',
+    short: 'MBTI 검사',
+    summary: '20문항, 3분이면 끝나는 성격 유형 검사',
+    path: '/test/mbti/',
+    cats: ['test'],
+    icon: 'mbti',
+    chars: ['deer'],
+    theme: 'study',
+    seal: '性',
+    publishedAt: '2026-10-18',
+  },
+  {
+    id: 'mbti-types',
+    title: 'MBTI 16유형 해설',
+    short: '16유형 해설',
+    summary: '유형별 연애, 직장, 친구 관계 특징 정리',
+    path: '/mbti/',
+    cats: ['test'],
+    icon: 'types',
+    chars: ['cat', 'hawk', 'rabbit', 'horse'],
+    theme: 'work',
+    seal: '型',
+    publishedAt: '2026-10-18',
+  },
+];
+
+export function byCategory(cat: CategoryKey) {
+  return CATALOG.filter((c) => c.cats.includes(cat));
+}
+
+export function featured(n = 6) {
+  return CATALOG.filter((c) => c.featured).sort((a, b) => a.featured! - b.featured!).slice(0, n);
+}
+
+export function related(currentId: string, n = 6) {
+  const cur = CATALOG.find((c) => c.id === currentId);
+  const same = CATALOG.filter((c) => c.id !== currentId && cur && c.cats.some((k) => cur.cats.includes(k)));
+  const first = same.slice(0, 3);
+  const pool = [...featured(40), ...CATALOG].filter((c, i, arr) => c.id !== currentId && !first.includes(c) && arr.indexOf(c) === i);
+  return [...first, ...pool].slice(0, n);
+}
+
+export function catalogById(id: string) {
+  return CATALOG.find((c) => c.id === id)!;
+}
