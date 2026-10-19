@@ -10,8 +10,11 @@ import { iconSvg } from '../art/icons';
 import { DEFAULT_YEAR, YEAR_INFO, ZODIAC_BRANCHES, ZODIAC_SLUG } from '../data/reading';
 import { BRANCHES } from '../data/saju';
 import { samjae, yearPillar } from '../lib/saju';
+import { DREAMS } from '../data/dreams';
+import { GUIDES } from '../data/guide';
 
-const menu = ['newyear', 'fortune-today', 'fortune-tomorrow', 'fortune-date', 'saju', 'gunghap', 'ohaeng', 'zodiac', 'name-match'].map(catalogById);
+const menu = ['newyear', 'fortune-today', 'fortune-tomorrow', 'saju', 'gunghap', 'saju-mbti', 'ilju', 'bujeok', 'dream', 'zodiac-today', 'ohaeng', 'fortune-date'].map(catalogById);
+const popularDreams = ['snake', 'pig', 'teeth', 'poop', 'death', 'ex', 'money', 'chased'].map((s) => DREAMS.find((d) => d.slug === s)!);
 const tests = ['animal', 'mbti-test', 'group', 'mbti-match', 'name-mbti', 'mbti-types'].map(catalogById);
 const loves = byCategory('love');
 const yb = yearPillar(DEFAULT_YEAR)[1];
@@ -33,6 +36,22 @@ const banners = [
     sub: '배우자 자리와 띠 궁합까지 꼼꼼하게',
     bg: '#ffdbe5',
     art: sceneSvg({ chars: ['rabbit', 'tiger'], theme: 'love', plain: true }),
+  },
+  {
+    href: '/saju-mbti/',
+    chip: 'NEW 사주 MBTI',
+    title: '사주로 본 내 MBTI, 몇 % 같을까?',
+    sub: '생일과 MBTI로 보는 싱크로율',
+    bg: '#dff1e4',
+    art: sceneSvg({ chars: ['fox', 'owl'], theme: 'work', plain: true }),
+  },
+  {
+    href: '/bujeok/',
+    chip: '소원 부적',
+    title: '소원을 적으면 부적을 써 드려요',
+    sub: '휴대폰 배경화면으로 딱 맞는 크기',
+    bg: '#fff0bf',
+    art: sceneSvg({ chars: ['owl', 'pig'], theme: 'luck', plain: true }),
   },
   {
     href: '/love/group/',
@@ -89,6 +108,15 @@ const ld = [
       </nav>
     </section>
 
+    <section class="card" aria-labelledby="rank-title">
+      <div class="flex items-baseline justify-between">
+        <h2 id="rank-title" class="card-title">오늘 운 좋은 띠</h2>
+        <a href="/zodiac/today/" class="text-[14px] font-semibold text-ink-2">12띠 순위</a>
+      </div>
+      <p class="card-sub" id="rank-sub">오늘의 일진으로 매긴 순위예요</p>
+      <ol class="rank3 mt-3" id="rank3"></ol>
+    </section>
+
     <section class="card" aria-labelledby="stamp-title">
       <div class="flex items-center justify-between">
         <h2 id="stamp-title" class="card-title">이번 주 출석 도장</h2>
@@ -141,12 +169,41 @@ const ld = [
       </ul>
     </section>
 
+    <section class="card" aria-labelledby="dream-title">
+      <div class="flex items-baseline justify-between">
+        <h2 id="dream-title" class="card-title">어젯밤 꿈, 무슨 뜻일까?</h2>
+        <a href="/dream/" class="text-[14px] font-semibold text-ink-2">꿈해몽 50</a>
+      </div>
+      <div class="mt-3 flex flex-wrap gap-1.5">
+        {popularDreams.map((d) => <a href={`/dream/${d.slug}/`} class="chip">{d.name}</a>)}
+      </div>
+    </section>
+
     <section class="card" aria-labelledby="love-title">
       <div class="flex items-baseline justify-between">
         <h2 id="love-title" class="card-title">궁합 모아 보기</h2>
         <a href="/category/love/" class="text-[14px] font-semibold text-ink-2">전체 보기</a>
       </div>
       <div class="mt-1"><TestList items={loves} /></div>
+    </section>
+
+    <section class="card" aria-labelledby="guide-title">
+      <div class="flex items-baseline justify-between">
+        <h2 id="guide-title" class="card-title">사주 백과</h2>
+        <a href="/guide/" class="text-[14px] font-semibold text-ink-2">전체 보기</a>
+      </div>
+      <ul class="mt-2 divide-y divide-[var(--line)]">
+        {
+          GUIDES.slice(0, 4).map((g) => (
+            <li>
+              <a href={`/guide/${g.slug}/`} class="flex items-center justify-between gap-3 py-3 text-[15.5px] font-semibold">
+                {g.title}
+                <span class="text-ink-3">›</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
     </section>
 
     <section class="card" aria-labelledby="about-title">
@@ -161,6 +218,34 @@ const ld = [
 </Base>
 
 <style>
+  .rank3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    min-height: 132px;
+  }
+  .rank3 :global(li a) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 4px;
+    border-radius: 16px;
+    background: var(--wash);
+    text-align: center;
+  }
+  .rank3 :global(li:first-child a) {
+    background: color-mix(in srgb, var(--hwang) 45%, transparent);
+  }
+  .rank3 :global(.r) {
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: var(--jusa);
+  }
+  .rank3 :global(svg) {
+    width: 56px;
+    height: 56px;
+    display: block;
+  }
   .zgrid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -198,6 +283,25 @@ const ld = [
 
 <script>
   import { currentProfile, honor } from '../lib/profile';
+  import { zodiacDayRanking } from '../lib/reading';
+  import { charSvg } from '../art/characters';
+  import { todayKST } from '../lib/ui';
+  import { calcSaju } from '../lib/saju';
+
+  // 오늘 운 좋은 띠 TOP 3
+  {
+    const r = zodiacDayRanking(todayKST());
+    document.getElementById('rank3')!.innerHTML = r.list
+      .slice(0, 3)
+      .map((x) => `<li><a href="/zodiac/today/"><span class="r">${x.rank}위</span>${charSvg(x.slug, 'happy')}<b class="text-[15px]">${x.animal}띠</b><span class="text-[12.5px] text-ink-2">${x.score}점</span></a></li>`)
+      .join('');
+    const cp = currentProfile();
+    const s = cp ? calcSaju(cp) : null;
+    if (s && typeof s !== 'string') {
+      const mine = r.list.find((x) => x.branch === s.yearBranch)!;
+      document.getElementById('rank-sub')!.textContent = `오늘 ${mine.animal}띠는 12띠 중 ${mine.rank}위예요`;
+    }
+  }
   const p = currentProfile();
   const chip = document.getElementById('who-chip')!;
   if (p) chip.innerHTML = `<span class="text-ink-3">선택</span> <b class="text-ink"></b> ⇄`;

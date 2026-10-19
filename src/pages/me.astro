@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import ProfileForm from '../components/ProfileForm.astro';
+import InviteBox from '../components/InviteBox.astro';
 import { charSvg } from '../art/characters';
 import { iconSvg } from '../art/icons';
 import { DEFAULT_YEAR } from '../data/reading';
@@ -45,6 +46,8 @@ const quick = [
       <p class="mt-3 min-h-[20px] text-[13.5px] font-semibold text-jusa" id="me-error" role="alert"></p>
       <button type="submit" class="btn btn-primary btn-block mt-1">이 기기에 저장</button>
     </form>
+
+    <InviteBox />
 
     <section class="card">
       <h2 class="card-title">정보는 이렇게 다뤄요</h2>

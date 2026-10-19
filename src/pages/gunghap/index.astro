@@ -1,5 +1,6 @@
 ---
 import InputPage from '../../components/InputPage.astro';
+import InviteBox from '../../components/InviteBox.astro';
 
 const faq = [
   { q: '사주 궁합은 어떻게 보나요?', a: '두 사람의 타고난 기운(일간)이 서로 살려 주는지 누르는지, 배우자 자리(일지)끼리 합을 이루는지 부딪히는지, 띠끼리의 관계, 서로 부족한 오행을 채워 주는지를 함께 따져서 점수를 매겨요.' },
@@ -27,4 +28,6 @@ const faq = [
   submitLabel="궁합 보기"
   two
   chars={['rabbit', 'tiger', 'owl']}
-/>
+>
+  <InviteBox />
+</InputPage>

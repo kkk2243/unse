@@ -1,0 +1,175 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import Faq from '../../components/Faq.astro';
+import Related from '../../components/Related.astro';
+import ShareBar from '../../components/ShareBar.astro';
+import Disclaimer from '../../components/Disclaimer.astro';
+import { faqLd } from '../../lib/seo';
+
+const faq = [
+  { q: '띠별 운세 순위는 어떻게 정해요?', a: '그날의 일진(날짜의 간지)과 각 띠의 관계를 봐요. 일진의 지지와 육합, 삼합을 이루는 띠는 순위가 높고, 충이나 원진 관계인 띠는 낮아져요. 여기에 일진 천간의 오행이 띠의 오행을 살려 주는지도 더해요.' },
+  { q: '순위는 언제 바뀌나요?', a: '한국 시간 자정에 날짜가 바뀌면 순위도 새로 계산돼요. 내일 순위도 미리 볼 수 있어요.' },
+  { q: '같은 띠면 운세도 다 같나요?', a: '띠별 순위는 큰 흐름이에요. 같은 띠라도 사주 전체가 달라서, 생년월일로 보는 오늘의 운세가 훨씬 자세하고 정확해요.' },
+];
+---
+
+<Base
+  title="오늘의 띠별 운세 순위"
+  description="오늘 운이 가장 좋은 띠는? 매일 자정 일진으로 새로 계산하는 12띠 운세 순위와 띠별 한마디, 행운의 색과 숫자를 알려 드려요. 내일 순위도 미리 볼 수 있어요."
+  ogImage="/og/test-zodiac-today.png"
+  crumbs={[{ name: '띠별 운세', path: '/zodiac/' }, { name: '오늘의 띠별 순위', path: '/zodiac/today/' }]}
+  jsonLd={[faqLd(faq)]}
+  back="/"
+  headerTitle="띠별 운세 순위"
+>
+  <div class="col pt-2">
+    <PageHero title="오늘의 띠별 운세 순위" lead="오늘 운이 가장 좋은 띠는 누구일까? 매일 자정에 일진으로 새로 매겨요." chars={['rat', 'tiger', 'dragon', 'dog']} theme="luck" />
+
+    <div class="seg mt-3" role="tablist" aria-label="날짜">
+      <label><input type="radio" name="rk-day" value="0" checked />오늘</label>
+      <label><input type="radio" name="rk-day" value="1" />내일</label>
+    </div>
+
+    <section class="card mt-3">
+      <p class="text-center text-[14px] font-semibold text-ink-2" id="rk-date">&nbsp;</p>
+      <div class="podium mt-3" id="rk-podium"></div>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">12띠 전체 순위</h2>
+      <p class="card-sub" id="rk-mine" hidden></p>
+      <ol class="mt-2 divide-y divide-[var(--line)]" id="rk-list"></ol>
+    </section>
+
+    <section class="card">
+      <ShareBar title="오늘의 띠별 운세 순위" text="오늘 운 좋은 띠 1등은 누구일까? 우리 띠 순위 확인해 봐" path="/zodiac/today/" ctaPath="/zodiac/today/" ogImage="/og/test-zodiac-today.png" campaign="zodiac-today" id="rk-share" />
+      <a href="/fortune/today/" class="btn btn-hwang btn-block mt-4">내 생일로 오늘의 운세 자세히 보기</a>
+    </section>
+
+    <AdSlot name="result-article" />
+
+    <article class="card prose-lab">
+      <h2>띠별 운세 순위 보는 법</h2>
+      <p>날마다 그날을 대표하는 간지, 일진이 있어요. 띠별 운세 순위는 오늘 일진의 지지(띠 동물)와 내 띠가 어떤 관계인지를 기준으로 매겨요. 서로 손을 잡는 육합이나 같은 팀인 삼합이면 순위가 올라가고, 정면으로 부딪히는 충이나 괜히 서운한 원진이면 내려가요.</p>
+      <p>순위가 낮다고 걱정할 필요는 없어요. 조심할 점을 미리 알면 오히려 실수를 줄일 수 있어요. 더 자세한 하루 흐름이 궁금하다면 생년월일로 보는 오늘의 운세를 확인해 보세요.</p>
+    </article>
+
+    <section class="card">
+      <h2 class="card-title">자주 묻는 질문</h2>
+      <Faq items={faq} />
+    </section>
+    <Related id="zodiac-today" />
+    <Disclaimer />
+  </div>
+</Base>
+
+<style>
+  .podium {
+    display: grid;
+    grid-template-columns: 1fr 1.15fr 1fr;
+    align-items: end;
+    gap: 8px;
+  }
+  .podium :global(.p) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .podium :global(.p .art) {
+    display: block;
+    width: 76px;
+    height: 76px;
+  }
+  .podium :global(.p1 .art) {
+    width: 96px;
+    height: 96px;
+  }
+  .podium :global(.p .base) {
+    width: 100%;
+    margin-top: 6px;
+    border-radius: 14px 14px 6px 6px;
+    background: var(--wash);
+    padding: 10px 4px;
+  }
+  .podium :global(.p1 .base) {
+    background: color-mix(in srgb, var(--hwang) 55%, transparent);
+    padding-top: 18px;
+  }
+  .podium :global(.p .rank) {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--jusa);
+  }
+</style>
+
+<script>
+  import { zodiacDayRanking } from '../../lib/reading';
+  import { charSvg } from '../../art/characters';
+  import { currentProfile } from '../../lib/profile';
+  import { calcSaju } from '../../lib/saju';
+  import { updateShare } from '../../lib/share';
+  import { todayKST, escapeHtml as e, track } from '../../lib/ui';
+  import { STEMS, BRANCHES } from '../../data/saju';
+
+  const cp = currentProfile();
+  const s = cp ? calcSaju(cp) : null;
+  const myBranch = s && typeof s !== 'string' ? s.yearBranch : null;
+  const shift = (ymd: string, n: number) => {
+    const [y, m, d] = ymd.split('-').map(Number);
+    return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
+  };
+
+  function render(offset: number) {
+    const ymd = shift(todayKST(), offset);
+    const [y, m, d] = ymd.split('-').map(Number);
+    const week = ['일', '월', '화', '수', '목', '금', '토'][new Date(Date.UTC(y, m - 1, d)).getUTCDay()];
+    const r = zodiacDayRanking(ymd);
+    document.getElementById('rk-date')!.textContent = `${m}월 ${d}일 ${week}요일, ${STEMS[r.gz[0]].ko}${BRANCHES[r.gz[1]].ko}(${r.gz})일`;
+    const top = r.list.slice(0, 3);
+    const order = [top[1], top[0], top[2]];
+    document.getElementById('rk-podium')!.innerHTML = order
+      .map(
+        (x) => `<div class="p p${x.rank}"><span class="art">${charSvg(x.slug, 'happy')}</span>
+        <div class="base"><span class="rank">${x.rank}위</span><b class="block text-[16px]">${x.animal}띠</b><span class="text-[13px] text-ink-2">${x.score}점</span></div></div>`,
+      )
+      .join('');
+    document.getElementById('rk-list')!.innerHTML = r.list
+      .map(
+        (x) => `<li class="flex items-start gap-3 py-3 ${x.branch === myBranch ? 'rk-me' : ''}">
+          <span class="w-8 flex-none pt-2 text-center font-display text-[18px] font-extrabold ${x.rank <= 3 ? 'text-jusa' : 'text-ink-2'}">${x.rank}</span>
+          <span class="block h-11 w-11 flex-none">${charSvg(x.slug, x.rank <= 6 ? 'happy' : 'normal')}</span>
+          <span class="flex-1">
+            <span class="flex items-center gap-2"><b class="text-[16px]">${x.animal}띠</b>${x.branch === myBranch ? '<span class="tag">내 띠</span>' : ''}<span class="ml-auto font-display text-[15px] font-bold text-ink-2">${x.score}점</span></span>
+            <span class="mt-1 block text-[14.5px] leading-relaxed">${e(x.line)}</span>
+            <span class="mt-1 block text-[13px] text-ink-3">행운의 색 ${x.color}, 숫자 ${x.number}</span>
+          </span></li>`,
+      )
+      .join('');
+    const mine = r.list.find((x) => x.branch === myBranch);
+    const mineEl = document.getElementById('rk-mine')!;
+    mineEl.hidden = !mine;
+    if (mine) mineEl.innerHTML = `${offset ? '내일' : '오늘'} 내 띠(${mine.animal}띠)는 <b class="text-jusa">${mine.rank}위</b>예요.`;
+    const when = offset ? '내일' : '오늘';
+    updateShare(document.getElementById('rk-share')!, {
+      title: mine ? `${when} ${mine.animal}띠 운세 ${mine.rank}위! 1위는 ${top[0].animal}띠` : `${when} 운 좋은 띠 1위는 ${top[0].animal}띠`,
+      text: '우리 띠는 몇 위일까? 매일 바뀌는 12띠 운세 순위',
+    });
+  }
+  render(0);
+  document.querySelectorAll<HTMLInputElement>('input[name=rk-day]').forEach((r) => r.addEventListener('change', () => render(Number(r.value))));
+  track('test_complete', { test: 'zodiac-today', result: '' });
+</script>
+
+<style is:global>
+  .rk-me {
+    background: color-mix(in srgb, var(--hwang) 22%, transparent);
+    border-radius: 12px;
+    margin: 0 -8px;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+</style>

@@ -1,0 +1,36 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import { GUIDES } from '../../data/guide';
+import { iconSvg } from '../../art/icons';
+---
+
+<Base
+  title="사주 백과"
+  ogImage="/og/guide.png"
+  description="사주팔자, 오행, 십신, 일주, 신강 신약, 대운, 삼재, 궁합, 띠 계산법까지. 사주를 처음 보는 사람도 이해할 수 있게 쉽게 풀어 쓴 사주 백과예요."
+  crumbs={[{ name: '사주 백과', path: '/guide/' }]}
+  back="/"
+  headerTitle="사주 백과"
+>
+  <div class="col pt-2">
+    <PageHero title="사주 백과" lead="사주가 처음이어도 괜찮아요. 내 풀이를 더 재밌게 읽을 수 있게 기초부터 쉽게 정리했어요." chars={['owl', 'turtle']} theme="study" />
+    <section class="card mt-3">
+      <ol class="divide-y divide-[var(--line)]">
+        {
+          GUIDES.map((g, i) => (
+            <li>
+              <a href={`/guide/${g.slug}/`} class="flex items-start gap-3 py-3.5">
+                <span class="grid h-12 w-12 flex-none place-items-center rounded-[16px] bg-[var(--wash)]" set:html={iconSvg(g.icon, 32)} />
+                <span class="flex-1">
+                  <span class="block text-[16px] font-bold leading-snug">{g.title}</span>
+                  <span class="mt-1 block text-[14px] leading-relaxed text-ink-2">{g.desc}</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+  </div>
+</Base>

@@ -9,6 +9,7 @@ import { MBTI_CHAR, DAY_MASTER_CHAR, ELEMENT_CHAR } from '../../art/characters';
 import { YEARS, YEAR_INFO, ZODIAC_BRANCHES, ZODIAC_SLUG, GH_TIER } from '../../data/reading';
 import { BRANCHES, DAY_MASTER, STEMS, ELEMENTS, ELEMENT_ORDER } from '../../data/saju';
 import { zodiacYearReading } from '../../lib/reading';
+import { ILJU_LIST, iljuInfo } from '../../lib/ilju';
 
 // 빌드할 때 /og/... .png 이미지를 미리 만들어 둡니다.
 export const getStaticPaths: GetStaticPaths = () => {
@@ -111,6 +112,15 @@ export const getStaticPaths: GetStaticPaths = () => {
     const t = GH_TIER(sc);
     add(`gunghap/${'abcde'[i]}`, { head: `${SITE.name} 궁합 판정`, kicker: '우리 사주 궁합은', name: t.name, line: t.line, seal: t.seal, cta: '우리 궁합 보기', scene: { chars: ghChars[i], theme: 'love' } });
   });
+
+  // 일주 도감 (60갑자)
+  for (const gz of ILJU_LIST) {
+    const x = iljuInfo(gz);
+    add(`ilju/${x.slug}`, { head: `${SITE.name} 일주 도감`, kicker: `${x.ko}일주(${gz})`, name: `${x.name} 일주`, line: x.dm.line, seal: gz, cta: '내 일주 찾기', scene: { chars: [DAY_MASTER_CHAR[x.stem], x.animalSlug], theme: 'study' } });
+  }
+
+  add('invite', { head: `${SITE.name} 궁합 초대장`, kicker: '내 생일만 넣으면', name: '우리 궁합 볼래?', line: '두 사람의 사주로 보는 궁합 점수가 바로 나와요', seal: '緣', cta: '우리 궁합 보기', scene: { chars: ['rabbit', 'tiger'], theme: 'love' } });
+  add('guide', { head: `${SITE.name} 사주 백과`, kicker: '처음 보는 사람도 쉽게', name: '사주 백과', line: '사주팔자, 오행, 십신, 일주, 대운, 삼재까지', seal: '四柱', cta: '읽어 보기', scene: { chars: ['owl', 'turtle'], theme: 'study' } });
 
   return paths;
 };

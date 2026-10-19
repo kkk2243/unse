@@ -27,6 +27,7 @@ import ResultShell from '../../components/ResultShell.astro';
   import { DAY_MASTER_CHAR } from '../../art/characters';
   import { STEMS, ELEMENTS, BRANCHES } from '../../data/saju';
   import { CAT_ICON } from '../../art/icons';
+  import { iljuSlug, iljuKo, iljuName } from '../../lib/ilju';
 
   const pend = getPending('saju') ?? (currentProfile() ? { kind: 'saju', a: currentProfile()! } : null);
   const s = pend ? calcSaju(pend.a) : null;
@@ -77,7 +78,7 @@ import ResultShell from '../../components/ResultShell.astro';
         )
       : '';
     const lucky = block('나를 돕는 행운 아이템', luckyHtml(n.lucky), 'clover');
-    document.getElementById('r-sections')!.innerHTML = [sec.me, chart, sec.ilju, sec.strength, balance, sec.groups, sec.gods, sec.stages, sec.love, sec.marriage, sec.money, sec.work, daeun, sec.business, sec.health, sec.study, sec.people, lucky].join('');
+    document.getElementById('r-sections')!.innerHTML = [sec.me, chart, sec.ilju, `<a href="/ilju/${iljuSlug(s.dayStem + s.dayBranch)}/" class="btn btn-line btn-block">${iljuKo(s.dayStem + s.dayBranch)}일주(${iljuName(s.dayStem + s.dayBranch)}) 도감 보기</a>`, sec.strength, balance, sec.groups, sec.gods, sec.stages, sec.love, sec.marriage, sec.money, sec.work, daeun, sec.business, sec.health, sec.study, sec.people, lucky].join('');
     document.getElementById('r-after')!.innerHTML = `<a href="/newyear/" class="btn btn-hwang btn-block">내 2028년 신년운세 보기</a>`;
 
     updateShare(document.getElementById('r-share')!, {

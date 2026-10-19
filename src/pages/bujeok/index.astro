@@ -1,0 +1,215 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Gate from '../../components/Gate.astro';
+import Talisman from '../../components/Talisman.astro';
+import ShareBar from '../../components/ShareBar.astro';
+import Faq from '../../components/Faq.astro';
+import Related from '../../components/Related.astro';
+import Disclaimer from '../../components/Disclaimer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import { WISHES } from '../../data/bujeok';
+import { ZODIAC_BRANCHES, ZODIAC_SLUG } from '../../data/reading';
+import { BRANCHES } from '../../data/saju';
+import { charSvg } from '../../art/characters';
+import { faqLd } from '../../lib/seo';
+
+const faq = [
+  { q: '부적을 어떻게 쓰면 되나요?', a: '완성된 부적을 "부적 저장"으로 내려받아 휴대폰 배경화면이나 잠금화면으로 설정해 보세요. 볼 때마다 소원을 한 번씩 떠올리는 것만으로도 마음을 다잡는 데 도움이 돼요.' },
+  { q: '정말 효과가 있나요?', a: '사주 연구원의 부적은 재미와 응원을 위한 디지털 부적이에요. 효험을 약속하지는 않지만, 소원을 글로 적고 매일 보는 습관은 목표를 이루는 데 꽤 쓸모가 있어요.' },
+  { q: '내가 쓴 소원은 저장되나요?', a: '아니요. 이름과 소원은 이 기기 안에서 부적을 그릴 때만 쓰고 어디에도 보내거나 저장하지 않아요.' },
+];
+---
+
+<Base
+  title="소원 부적 만들기, 휴대폰 배경화면 부적"
+  description="합격, 재물, 연애, 건강, 승진, 액막이까지. 이름과 소원을 넣으면 귀여운 수호 동물이 그려진 나만의 부적을 휴대폰 배경화면 크기로 만들어 드려요. 무료."
+  ogImage="/og/test-bujeok.png"
+  crumbs={[{ name: '사주·운세', path: '/category/saju/' }, { name: '소원 부적', path: '/bujeok/' }]}
+  jsonLd={[faqLd(faq)]}
+  back="/"
+  headerTitle="소원 부적"
+>
+  <div class="col pt-2">
+    <PageHero title="소원 부적 만들기" lead="소원을 적으면 수호 동물이 지켜 주는 나만의 부적을 써 드려요. 휴대폰 배경화면으로 딱 맞는 크기예요." chars={['owl', 'pig', 'dog']} theme="luck" />
+
+    <form class="card mt-3" id="bj-form" novalidate>
+      <span class="field-label">어떤 소원인가요?</span>
+      <div class="bj-kinds" role="radiogroup" aria-label="소원 종류">
+        {
+          WISHES.map((w, i) => (
+            <label>
+              <input type="radio" name="kind" value={w.key} checked={i === 0} />
+              <span class="block h-11 w-11" set:html={charSvg(w.char, 'happy')} />
+              {w.label}
+            </label>
+          ))
+        }
+      </div>
+
+      <label class="field-label mt-5" for="bj-wish">소원 한 줄 <span class="font-normal text-ink-3">(선택)</span></label>
+      <input class="field" id="bj-wish" maxlength="20" autocomplete="off" placeholder={WISHES[0].hint} />
+
+      <div class="mt-5 grid grid-cols-2 gap-3">
+        <div>
+          <label class="field-label" for="bj-name">이름 <span class="font-normal text-ink-3">(선택)</span></label>
+          <input class="field" id="bj-name" maxlength="6" autocomplete="off" placeholder="예: 서연" />
+        </div>
+        <div>
+          <label class="field-label" for="bj-zodiac">수호 띠</label>
+          <select class="field" id="bj-zodiac">
+            <option value="">고르지 않음</option>
+            {ZODIAC_BRANCHES.map((b) => <option value={b}>{BRANCHES[b].animal}띠</option>)}
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block mt-6">부적 쓰기</button>
+      <p class="mt-2 text-center text-[13px] text-ink-3">이름과 소원은 이 기기 안에서만 쓰고 저장하지 않아요</p>
+    </form>
+
+    <div id="bj-result" hidden class="mt-3">
+      <div id="bj-card">
+        <Talisman head="소원 부적" name="" seal="福" chars={['owl']} theme="luck" headingLevel="h2" />
+      </div>
+      <section class="card mt-3">
+        <p class="text-[15px] leading-relaxed">"부적 저장"을 누르면 휴대폰 배경화면 크기(9:16) 이미지로 저장돼요. 잠금화면에 두고 볼 때마다 소원을 떠올려 보세요.</p>
+        <div class="mt-4">
+          <ShareBar title="소원 부적" text="소원을 적으면 수호 동물이 지켜 주는 부적을 써 줘요" path="/bujeok/" ctaPath="/bujeok/" ogImage="/og/test-bujeok.png" campaign="bujeok" id="bj-share" />
+        </div>
+        <button type="button" class="btn btn-line btn-block mt-4" id="bj-again">다른 소원 쓰기</button>
+      </section>
+    </div>
+
+    <AdSlot name="test-intro" />
+
+    <article class="card prose-lab">
+      <h2>부적, 옛날 사람들의 응원 카드</h2>
+      <p>부적은 종이에 붉은 글씨로 소원과 바람을 적어 몸에 지니거나 문에 붙이던 우리 전통 풍습이에요. 시험을 앞둔 자녀에게, 먼 길 떠나는 가족에게 무사와 성공을 비는 마음을 담아 건네곤 했어요.</p>
+      <p>사주 연구원의 소원 부적은 이 풍습을 요즘 방식으로 바꾼 디지털 부적이에요. 노란 종이와 붉은 도장, 그리고 소원을 지켜 줄 귀여운 수호 동물을 그려 휴대폰 배경화면으로 쓸 수 있게 만들었어요. 합격에는 지혜로운 부엉이, 재물에는 복을 부르는 돼지, 액막이에는 집을 지키는 강아지가 함께해요.</p>
+      <p>소원을 글로 적고 매일 눈에 보이는 곳에 두면 목표를 잊지 않게 돼요. 친구나 가족에게 응원의 의미로 부적을 써서 보내 보는 것도 좋아요.</p>
+    </article>
+
+    <section class="card">
+      <h2 class="card-title">자주 묻는 질문</h2>
+      <Faq items={faq} />
+    </section>
+
+    <Related id="bujeok" />
+    <Disclaimer />
+  </div>
+  <Gate slot="overlay" />
+</Base>
+
+<style>
+  .bj-kinds {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .bj-kinds label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 2px 9px;
+    border-radius: 16px;
+    border: 1.5px solid var(--line);
+    font-size: 13.5px;
+    font-weight: 650;
+    text-align: center;
+    cursor: pointer;
+    word-break: keep-all;
+    line-height: 1.25;
+  }
+  .bj-kinds input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .bj-kinds label:has(input:checked) {
+    border-color: var(--jusa);
+    background: color-mix(in srgb, var(--jusa) 8%, transparent);
+    color: var(--jusa);
+  }
+  .bj-kinds label:has(input:focus-visible) {
+    outline: 2px solid var(--jusa);
+    outline-offset: 2px;
+  }
+</style>
+
+<script>
+  import { WISHES } from '../../data/bujeok';
+  import { ZODIAC_SLUG } from '../../data/reading';
+  import { BRANCHES } from '../../data/saju';
+  import { currentProfile, honor } from '../../lib/profile';
+  import { calcSaju, hashString } from '../../lib/saju';
+  import { fillTalisman, replayReveal } from '../../lib/talisman-dom';
+  import { updateShare } from '../../lib/share';
+  import { openGate } from '../../lib/gate';
+  import { todayKST, track } from '../../lib/ui';
+
+  const form = document.getElementById('bj-form') as HTMLFormElement;
+  const wishEl = document.getElementById('bj-wish') as HTMLInputElement;
+  const nameEl = document.getElementById('bj-name') as HTMLInputElement;
+  const zodEl = document.getElementById('bj-zodiac') as HTMLSelectElement;
+  const result = document.getElementById('bj-result')!;
+
+  const cp = currentProfile();
+  if (cp) {
+    nameEl.value = cp.name;
+    const s = calcSaju(cp);
+    if (typeof s !== 'string') zodEl.value = s.yearBranch;
+  }
+  const kindOf = () => WISHES.find((w) => w.key === (form.elements.namedItem('kind') as RadioNodeList).value)!;
+  form.addEventListener('change', (e) => {
+    if ((e.target as HTMLInputElement).name === 'kind') wishEl.placeholder = kindOf().hint;
+  });
+
+  function draw() {
+    const w = kindOf();
+    const name = nameEl.value.trim();
+    const wish = wishEl.value.trim() || w.wish;
+    const zb = zodEl.value;
+    const [y, m, d] = todayKST().split('-').map(Number);
+    const line = w.lines[hashString(wish + name + todayKST()) % w.lines.length];
+    const card = {
+      kicker: name ? `${honor(name)}의 ${w.title}` : w.title,
+      name: wish,
+      line,
+      rows: [...(zb ? ([['수호 동물', `${BRANCHES[zb].animal}띠의 ${BRANCHES[zb].animal}`]] as [string, string][]) : []), ['부적 쓴 날', `${y}년 ${m}월 ${d}일`]] as [string, string][],
+      seal: w.seal,
+      scene: { chars: zb ? [w.char, ZODIAC_SLUG[zb]] : [w.char], theme: w.theme, mood: 'happy' as const },
+    };
+    const cardEl = document.getElementById('bj-card')!;
+    fillTalisman(cardEl, card);
+    result.hidden = false;
+    replayReveal(cardEl);
+    cardEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    updateShare(document.getElementById('bj-share')!, {
+      title: `${name ? honor(name) + '의 ' : ''}${w.title}: ${wish}`,
+      text: '소원을 적으면 수호 동물이 지켜 주는 부적을 써 줘요. 너도 하나 써 봐',
+      talisman: { ...card, head: cardEl.querySelector('.t-head')!.textContent!, foot: cardEl.querySelector('.t-foot')!.textContent! },
+    });
+    track('test_complete', { test: 'bujeok', result: w.key });
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const w = kindOf();
+    openGate({
+      name: nameEl.value.trim() ? `${honor(nameEl.value.trim())}의 ` : '',
+      label: `${w.title}를 정성껏 쓰고 있어요`,
+      doneLabel: '부적이 완성됐어요',
+      steps: ['먹을 갈고 붓을 고르는 중', '소원을 한 글자씩 적는 중', '수호 동물을 불러오는 중', '도장을 찍는 중'],
+      chars: [w.char, 'owl'],
+      ms: 3200,
+      onDone: draw,
+      test: 'bujeok',
+    });
+  });
+  document.getElementById('bj-again')!.addEventListener('click', () => {
+    result.hidden = true;
+    form.scrollIntoView({ behavior: 'smooth' });
+  });
+</script>

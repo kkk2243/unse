@@ -111,6 +111,10 @@ import WeekStamps from '../../components/WeekStamps.astro';
       if (isNew) toast(st === 7 ? '7일 연속 출석 달성!' : st > 1 ? `출석 도장 쾅. ${st}일째예요` : '첫 출석 도장 쾅');
     }
 
+    const more = document.createElement('div');
+    more.className = 'grid grid-cols-2 gap-2';
+    more.innerHTML = `<a href="/zodiac/today/" class="btn btn-line btn-sm">오늘의 띠별 순위</a><a href="/dream/" class="btn btn-line btn-sm">어젯밤 꿈 해몽</a>`;
+    document.getElementById('r-after')!.appendChild(more);
     const share = document.getElementById('r-share')!;
     updateShare(share, {
       title: `${when} 내 운세 ${r.score}점, ${r.headline}`,
