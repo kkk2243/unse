@@ -1,0 +1,105 @@
+---
+// 생년월일 입력 (년/월/일 선택). 사주 페이지에서는 양력/음력과 태어난 시간도 받습니다.
+interface Props {
+  prefix: string;
+  calendar?: boolean;
+  time?: boolean;
+}
+const { prefix, calendar = false, time = false } = Astro.props;
+const thisYear = new Date().getFullYear();
+const years = Array.from({ length: thisYear - 1929 }, (_, i) => thisYear - i);
+const SIJIN = [
+  ['자시', '밤 11시 30분 ~ 새벽 1시 29분'],
+  ['축시', '새벽 1시 30분 ~ 3시 29분'],
+  ['인시', '새벽 3시 30분 ~ 5시 29분'],
+  ['묘시', '아침 5시 30분 ~ 7시 29분'],
+  ['진시', '아침 7시 30분 ~ 9시 29분'],
+  ['사시', '오전 9시 30분 ~ 11시 29분'],
+  ['오시', '오전 11시 30분 ~ 오후 1시 29분'],
+  ['미시', '오후 1시 30분 ~ 3시 29분'],
+  ['신시', '오후 3시 30분 ~ 5시 29분'],
+  ['유시', '오후 5시 30분 ~ 7시 29분'],
+  ['술시', '저녁 7시 30분 ~ 9시 29분'],
+  ['해시', '밤 9시 30분 ~ 11시 29분'],
+];
+---
+
+<fieldset class="birth" data-birth={prefix}>
+  <legend class="field-label">생년월일</legend>
+  {
+    calendar && (
+      <div class="mb-3 flex items-center gap-3">
+        <div class="seg flex-1" role="radiogroup" aria-label="달력 종류">
+          <label>
+            <input type="radio" name={`${prefix}-cal`} value="solar" checked />
+            양력
+          </label>
+          <label>
+            <input type="radio" name={`${prefix}-cal`} value="lunar" />
+            음력
+          </label>
+        </div>
+        <label class="leap flex items-center gap-2 text-[15px] font-semibold text-ink-2" hidden>
+          <input type="checkbox" name={`${prefix}-leap`} class="h-5 w-5 accent-[var(--jusa)]" />
+          윤달
+        </label>
+      </div>
+    )
+  }
+  <div class="grid grid-cols-[1.3fr_1fr_1fr] gap-2">
+    <select class="field" name={`${prefix}-y`} aria-label="태어난 해" required>
+      <option value="" selected disabled>년</option>
+      {years.map((y) => <option value={y}>{y}년</option>)}
+    </select>
+    <select class="field" name={`${prefix}-m`} aria-label="태어난 달" required>
+      <option value="" selected disabled>월</option>
+      {Array.from({ length: 12 }, (_, i) => <option value={i + 1}>{i + 1}월</option>)}
+    </select>
+    <select class="field" name={`${prefix}-d`} aria-label="태어난 날" required>
+      <option value="" selected disabled>일</option>
+      {Array.from({ length: 31 }, (_, i) => <option value={i + 1}>{i + 1}일</option>)}
+    </select>
+  </div>
+  {
+    time && (
+      <div class="mt-4">
+        <label class="field-label" for={`${prefix}-t`}>
+          태어난 시간
+        </label>
+        <select class="field" id={`${prefix}-t`} name={`${prefix}-t`}>
+          <option value="-1" selected>
+            모름
+          </option>
+          {SIJIN.map(([n, range], i) => (
+            <option value={i}>
+              {n} ({range})
+            </option>
+          ))}
+        </select>
+        <p class="mt-1.5 text-[13px] text-ink-3">모르면 비워 두세요. 시간 없이 여섯 글자로 풀어 드려요.</p>
+      </div>
+    )
+  }
+</fieldset>
+
+<style>
+  .birth select.field {
+    padding-left: 12px;
+    padding-right: 28px;
+    background-position: right 10px center;
+  }
+  .leap[hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-birth]').forEach((root) => {
+    const leap = root.querySelector<HTMLElement>('.leap');
+    root.querySelectorAll<HTMLInputElement>('input[type=radio]').forEach((r) =>
+      r.addEventListener('change', () => {
+        if (leap) leap.hidden = r.value !== 'lunar' || !r.checked;
+      }),
+    );
+  });
+</script>

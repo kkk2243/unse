@@ -1,0 +1,163 @@
+---
+import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
+import '@fontsource-variable/hahmlet';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import TabBar from '../components/TabBar.astro';
+import SidePanel from '../components/SidePanel.astro';
+import { SITE, ENV } from '../config/site';
+
+interface Crumb {
+  name: string;
+  path: string;
+}
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string; // '/og/xxx.png'
+  canonicalPath?: string;
+  noindex?: boolean;
+  crumbs?: Crumb[];
+  jsonLd?: Record<string, unknown>[];
+  back?: string; // 하위 페이지: 뒤로 가기 주소
+  headerTitle?: string;
+}
+
+const {
+  title,
+  description = SITE.description,
+  ogImage = '/og/default.png',
+  canonicalPath,
+  noindex = false,
+  crumbs = [],
+  jsonLd = [],
+  back,
+  headerTitle,
+} = Astro.props;
+
+const fullTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} – ${SITE.tagline}`;
+const site = Astro.site!;
+const canonical = new URL(canonicalPath ?? Astro.url.pathname, site).href;
+const ogUrl = new URL(ogImage, site).href;
+
+const ld: Record<string, unknown>[] = [...jsonLd];
+if (crumbs.length) {
+  ld.push({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [{ name: SITE.name, path: '/' }, ...crumbs].map((c, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: c.name,
+      item: new URL(c.path, site).href,
+    })),
+  });
+}
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <script is:inline>
+      // 궁합 초대장(?invite=)은 광고, 통계 스크립트가 읽기 전에 주소에서 빼서 이 탭에만 보관합니다
+      (function () {
+        var u = new URL(location.href);
+        var c = u.searchParams.get('invite');
+        if (!c) return;
+        window.__sajuInvite = c;
+        try {
+          sessionStorage.setItem('saju.invite', c);
+        } catch (e) {}
+        u.searchParams.delete('invite');
+        history.replaceState(null, '', u.pathname + u.search + u.hash);
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex,follow" />}
+    <meta name="theme-color" content="#f2f3f8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#101118" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="preload" href="/fonts/seal-hanja.woff2" as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content={SITE.locale} />
+    <meta property="og:title" content={title ?? SITE.name} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- 네이버 서치어드바이저 소유 확인: 발급받은 값을 content에 넣으세요 -->
+    <!-- <meta name="naver-site-verification" content="" /> -->
+
+    <script is:inline>
+      (function () {
+        var t = null;
+        try {
+          t = localStorage.getItem('saju.theme');
+        } catch (e) {}
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.dataset.theme = t;
+      })();
+    </script>
+
+    {
+      ENV.gaId && (
+        <>
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${ENV.gaId}`} />
+          <script is:inline define:vars={{ gaId: ENV.gaId }}>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+              dataLayer.push(arguments);
+            }
+            window.gtag = gtag;
+            gtag('js', new Date());
+            // 궁합 초대장 링크(?invite=)의 개인정보가 통계로 넘어가지 않도록 주소에서 빼고 보냅니다
+            var loc = new URL(location.href);
+            loc.searchParams.delete('invite');
+            gtag('config', gaId, { page_location: loc.href });
+          </script>
+        </>
+      )
+    }
+    {
+      ENV.adsenseClient && (
+        <script
+          is:inline
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ENV.adsenseClient}`}
+          crossorigin="anonymous"
+        />
+      )
+    }
+    {ld.map((obj) => <script is:inline type="application/ld+json" set:html={JSON.stringify(obj)} />)}
+  </head>
+  <body>
+    <div class="shell">
+      <SidePanel />
+      <div class="app">
+        <Header back={back} title={headerTitle ?? title} />
+        <main id="main">
+          <slot />
+        </main>
+        <Footer />
+        <TabBar />
+        <slot name="overlay" />
+      </div>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

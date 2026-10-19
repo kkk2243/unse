@@ -1,0 +1,36 @@
+---
+import InputPage from '../../components/InputPage.astro';
+import MbtiSelect from '../../components/MbtiSelect.astro';
+
+const faq = [
+  { q: '사주로 MBTI를 어떻게 알아요?', a: '사주 여덟 글자의 오행과 십신 분포를 MBTI의 네 가지 성향에 맞춰 봐요. 예를 들어 표현하고 움직이는 기운(식상, 재성)이 많으면 외향, 받아들이고 생각하는 기운(인성)이 많으면 내향 쪽으로 기울어요.' },
+  { q: '싱크로율은 무슨 뜻인가요?', a: '사주가 말하는 성향과 내가 실제로 알고 있는 MBTI가 얼마나 같은지를 0에서 100 사이 숫자로 나타낸 거예요. 높으면 타고난 기질대로 자란 사람, 낮으면 사주 속에 다른 내가 숨어 있는 사람이에요.' },
+  { q: '싱크로율이 낮으면 나쁜 건가요?', a: '아니요. 살면서 환경과 경험으로 새로운 성향을 만든 거라서 오히려 반전 매력이 있다는 뜻이에요. 재미로 비교해 보세요.' },
+];
+---
+
+<InputPage
+  id="saju-mbti"
+  title="사주 MBTI 싱크로율"
+  heroTitle="사주 MBTI"
+  lead="사주로 본 나의 MBTI는 뭘까? 실제 MBTI와 얼마나 같은지 싱크로율로 알려 드려요."
+  desc="생년월일과 MBTI를 넣으면 사주 여덟 글자로 본 나의 MBTI와 실제 MBTI의 싱크로율을 계산해요. 외향과 내향, 감각과 직관, 사고와 감정, 계획과 즉흥을 사주 기운으로 비교해 드려요."
+  articleTitle="사주로 MBTI를 보는 방법"
+  article={[
+    'MBTI는 내가 고른 답으로 성격을 나누고, 사주는 태어난 순간의 기운으로 기질을 읽어요. 사주 MBTI는 이 둘을 나란히 놓고 비교하는 사주 연구원만의 테스트예요.',
+    '사주에서 밖으로 표현하고 움직이는 기운(식상, 재성)과 양의 일간이 강하면 외향(E), 받아들이고 생각하는 기운(인성)이 강하면 내향(I)으로 봐요. 현실을 다루는 재성, 관성과 흙, 쇠 기운은 감각(S), 직감의 인성과 나무, 물 기운은 직관(N)이에요.',
+    '판단하는 관성과 쇠 기운은 사고(T), 품어 주는 인성과 나무, 불 기운은 감정(F)이에요. 정관, 정재, 정인처럼 반듯한 십신이 많으면 계획(J), 편재, 상관처럼 자유로운 십신이 많으면 즉흥(P)으로 기울어요.',
+  ]}
+  faq={faq}
+  kind="sm"
+  resultPath="/saju-mbti/result/"
+  gateLabel="사주 속 MBTI를 찾고 있어요"
+  gateSteps={['사주 여덟 글자를 세우는 중', '오행과 십신을 세는 중', '네 가지 성향을 비교하는 중', '싱크로율을 계산하는 중']}
+  submitLabel="싱크로율 보기"
+  chars={['fox', 'owl', 'cat']}
+>
+  <div slot="fields" class="mt-6">
+    <MbtiSelect name="mbti" id="sm-mbti" label="내 MBTI" extra="MBTI를 골라 주세요" />
+    <p class="mt-2 text-[13.5px] text-ink-3">MBTI를 모르면 <a href="/test/mbti/" class="font-semibold underline">3분 검사</a>로 먼저 알아보세요.</p>
+  </div>
+</InputPage>

@@ -1,0 +1,55 @@
+---
+// 결과 페이지 공통 틀: 부적 카드 → 공유 → 광고 → 풀이 → 추천
+import Talisman from './Talisman.astro';
+import ShareBar from './ShareBar.astro';
+import AdSlot from './AdSlot.astro';
+import Related from './Related.astro';
+import Disclaimer from './Disclaimer.astro';
+import type { Theme } from '../art/characters';
+
+interface Props {
+  id: string; // catalog id
+  inputPath: string;
+  inputLabel: string;
+  head: string;
+  seal: string;
+  chars: string[];
+  theme: Theme;
+  shareCampaign: string;
+}
+const { id, inputPath, inputLabel, head, seal, chars, theme, shareCampaign } = Astro.props;
+---
+
+<div class="col pt-2">
+  <div id="r-empty" class="card text-center" hidden>
+    <p class="text-[17px] font-bold">아직 입력한 정보가 없어요</p>
+    <p class="mt-1 text-[15px] text-ink-2">생년월일을 넣으면 바로 풀어 드려요.</p>
+    <a href={inputPath} class="btn btn-primary btn-block mt-4">{inputLabel}</a>
+  </div>
+
+  <div id="r-body" hidden>
+    <div id="r-card">
+      <Talisman head={head} name="" seal={seal} chars={chars} theme={theme} headingLevel="h1" />
+    </div>
+
+    <section class="card mt-3" aria-label="결과 공유">
+      <ShareBar title="" text="" path={inputPath} ctaPath={inputPath} campaign={shareCampaign} id="r-share" />
+      <div class="mt-4 grid grid-cols-2 gap-2">
+        <a href={inputPath} class="btn btn-line btn-sm">다른 사람 보기</a>
+        <a href="/me/" class="btn btn-line btn-sm">내 정보 관리</a>
+      </div>
+    </section>
+
+    <AdSlot name="result-top" />
+
+    <div id="r-sections" class="stack"></div>
+
+    <AdSlot name="result-article" />
+
+    <div id="r-after" class="stack mt-3"></div>
+    <slot />
+  </div>
+
+  <Related id={id} />
+  <Disclaimer />
+</div>

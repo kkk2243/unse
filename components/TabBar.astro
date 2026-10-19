@@ -1,0 +1,34 @@
+---
+import { TAB_ICONS } from '../art/icons';
+import { DEFAULT_YEAR } from '../data/reading';
+
+const path = Astro.url.pathname;
+const tabs = [
+  { href: '/', label: '홈', icon: 'home', match: (p: string) => p === '/' },
+  { href: '/newyear/', label: `${DEFAULT_YEAR} 운세`, icon: 'year', match: (p: string) => p.startsWith('/newyear') || p.startsWith('/zodiac') },
+  {
+    href: '/category/love/',
+    label: '궁합',
+    icon: 'love',
+    match: (p: string) => p.startsWith('/category/love') || p.startsWith('/gunghap') || p.startsWith('/love') || p.startsWith('/mbti-match'),
+  },
+  {
+    href: '/category/test/',
+    label: '테스트',
+    icon: 'test',
+    match: (p: string) => p.startsWith('/category/test') || p.startsWith('/test') || p.startsWith('/mbti/'),
+  },
+  { href: '/me/', label: '내 정보', icon: 'me', match: (p: string) => p.startsWith('/me') },
+];
+---
+
+<nav class="tabbar" aria-label="주요 메뉴">
+  {
+    tabs.map((t) => (
+      <a href={t.href} aria-current={t.match(path) ? 'page' : undefined}>
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" set:html={TAB_ICONS[t.icon]} />
+        {t.label}
+      </a>
+    ))
+  }
+</nav>

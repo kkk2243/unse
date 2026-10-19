@@ -1,0 +1,355 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Gate from '../../components/Gate.astro';
+import { catalogById } from '../../data/catalog';
+import Talisman from '../../components/Talisman.astro';
+import ShareBar from '../../components/ShareBar.astro';
+import Faq from '../../components/Faq.astro';
+import Related from '../../components/Related.astro';
+import Disclaimer from '../../components/Disclaimer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import { faqLd } from '../../lib/seo';
+import { MBTI_CODES } from '../../data/mbti/types';
+import { mbtiScore } from '../../data/mbti/compat';
+import { ROLES, ROLE_PREF } from '../../data/mbti/roles';
+
+const table = Object.fromEntries(MBTI_CODES.map((a) => [a, Object.fromEntries(MBTI_CODES.map((b) => [b, mbtiScore(a, b)]))]));
+
+const item = catalogById('group');
+const faq = [
+  { q: '몇 명까지 넣을 수 있나요?', a: '3명부터 8명까지 넣을 수 있어요. 사람이 많을수록 관계도의 선이 많아져서 보는 재미가 커져요.' },
+  { q: '역할은 어떻게 정해지나요?', a: 'MBTI 유형마다 잘 어울리는 역할 후보가 세 개씩 있고, 모임 안에서 겹치지 않도록 앞사람부터 차례로 나눠 줘요.' },
+  { q: '친구 이름이 저장되나요?', a: '아니요. 이름과 유형은 지금 쓰는 브라우저 안에서만 계산하고 어디에도 보내지 않아요.' },
+];
+---
+
+<Base
+  title="단톡방 궁합 – 우리 모임 MBTI 케미 지도"
+  description="친구 3~8명의 MBTI를 넣으면 우리 모임의 관계도, 최고의 짝꿍, 의외의 조합, 각자의 역할까지 한 장에 그려 드려요. 단톡방에 공유하기 좋은 모임 케미 테스트."
+  ogImage="/og/test-group.png"
+  crumbs={[{ name: '궁합', path: '/category/love/' }, { name: '단톡방 궁합', path: '/love/group/' }]}
+  jsonLd={[faqLd(faq)]}
+>
+  <div class="col pt-2">
+    <PageHero title="단톡방 궁합" lead="친구들의 MBTI를 넣으면 관계도를 그리고 각자 맡은 역할까지 정해 드려요." chars={item.chars} theme="group" />
+
+    <form class="card mt-3" id="gr-form" novalidate>
+      <ol class="space-y-2.5" id="gr-rows"></ol>
+      <button type="button" class="btn btn-line btn-sm btn-block mt-3" id="gr-add">사람 추가</button>
+      <p class="mt-2 min-h-[20px] text-[13.5px] font-semibold text-jusa" id="gr-error" role="alert"></p>
+      <button type="submit" class="btn btn-primary btn-block mt-1">우리 모임 케미 보기</button>
+    </form>
+
+    <template id="gr-row-tpl">
+      <li class="gr-row">
+        <span class="gr-no font-display"></span>
+        <input class="field" name="name" maxlength="6" autocomplete="off" />
+        <select class="field" name="mbti" aria-label="MBTI">
+          <option value="" selected disabled>MBTI</option>
+          {MBTI_CODES.map((c) => <option value={c}>{c}</option>)}
+        </select>
+        <button type="button" class="gr-del" aria-label="이 사람 빼기">
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"
+            ><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path></svg
+          >
+        </button>
+      </li>
+    </template>
+
+    <div id="gr-result" hidden class="mt-3">
+      <div id="gr-card">
+        <Talisman head="단톡방 케미 판정" name="" seal="群" chars={item.chars} theme="group" headingLevel="h2" />
+      </div>
+
+      <section class="card mt-3" aria-labelledby="gr-map-title">
+        <h2 id="gr-map-title" class="card-title">우리 모임 관계도</h2>
+        <p class="mt-1 text-[14px] text-ink-2">선이 굵고 붉을수록 잘 맞는 사이예요. 점선은 이번 모임의 의외의 조합.</p>
+        <div class="mt-4 rounded-[14px] border-[1.5px] border-line p-2" id="gr-map"></div>
+      </section>
+
+      <section class="card mt-3" aria-labelledby="gr-role-title">
+        <h2 id="gr-role-title" class="card-title">모임 속 내 역할</h2>
+        <ul class="rows mt-2" id="gr-roles"></ul>
+      </section>
+
+      <section class="card mt-3" aria-labelledby="gr-pair-title">
+        <h2 id="gr-pair-title" class="card-title">짝꿍 순위</h2>
+        <ol class="rows mt-2" id="gr-pairs"></ol>
+      </section>
+
+      <div class="card mt-3">
+        <ShareBar title="단톡방 궁합" text="우리 모임 MBTI 케미 지도" path="/love/group/" ogImage="/og/test-group.png" campaign="group" id="gr-share" />
+      </div>
+    </div>
+
+    <AdSlot name="test-intro" />
+
+    <article class="card prose-lab">
+      <h2>모임 케미는 이렇게 봐요</h2>
+      <p>
+        단톡방 궁합은 모임 사람들의 MBTI를 둘씩 짝지어 궁합 점수를 매긴 다음, 그 평균으로 모임 전체의 분위기를 판정해요. 세 명이면 세 쌍,
+        여덟 명이면 스물여덟 쌍의 궁합을 한 번에 계산하는 셈이에요.
+      </p>
+      <p>
+        관계도에서는 점수가 높은 사이일수록 선이 굵고 진하게 그려져요. 가장 점수가 높은 두 사람은 최고의 짝꿍, 가장 낮은 두 사람은 의외의
+        조합으로 뽑아 드려요. 의외의 조합이라고 사이가 나쁘다는 뜻은 아니에요. 서로 다른 만큼 같이 있으면 사건이 생기는 사이라는 뜻이죠.
+      </p>
+      <p>
+        각자의 역할은 유형별로 어울리는 역할 후보 중에서 겹치지 않게 골라 드려요. 결과를 단톡방에 올리고 "이거 완전 너잖아"를 외쳐 보세요.
+      </p>
+    </article>
+
+    <section class="card" aria-labelledby="faq">
+      <h2 id="faq" class="card-title">자주 묻는 질문</h2>
+      <Faq items={faq} />
+    </section>
+
+    <Related id="group" />
+    <Disclaimer mbti />
+  </div>
+  <Gate slot="overlay" />
+
+  <script
+    type="application/json"
+    id="gr-data"
+    set:html={JSON.stringify({ table, roles: ROLES, pref: ROLE_PREF })}
+  />
+</Base>
+
+<style>
+  :global(.gr-row) {
+    display: grid;
+    grid-template-columns: 22px 1fr 104px 36px;
+    gap: 8px;
+    align-items: center;
+  }
+  :global(.gr-row .field) {
+    min-height: 48px;
+    font-size: 16px;
+    padding: 0 12px;
+  }
+  :global(.gr-row select.field) {
+    padding-right: 28px;
+    background-position: right 10px center;
+  }
+  :global(.gr-no) {
+    font-weight: 800;
+    color: var(--ink-3);
+    text-align: center;
+  }
+  :global(.gr-del) {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--ink-3);
+  }
+  :global(.gr-del:hover) {
+    background: var(--wash);
+    color: var(--ink);
+  }
+  :global(.gr-del[hidden]) {
+    visibility: hidden;
+    display: grid;
+  }
+  :global(#gr-map svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+</style>
+
+<script>
+  import { fillTalisman, replayReveal } from '../../lib/talisman-dom';
+  import { updateShare } from '../../lib/share';
+  import { track, escapeHtml } from '../../lib/ui';
+  import { groupVibe } from '../../data/mbti/roles';
+  import { openGate } from '../../lib/gate';
+  import { MBTI_CHAR, charInner, charSvg } from '../../art/characters';
+
+  type Data = { table: Record<string, Record<string, number>>; roles: Record<string, string>; pref: Record<string, string[]> };
+  const D: Data = JSON.parse(document.getElementById('gr-data')!.textContent!);
+
+  const form = document.getElementById('gr-form') as HTMLFormElement;
+  const rowsEl = document.getElementById('gr-rows')!;
+  const tpl = document.getElementById('gr-row-tpl') as HTMLTemplateElement;
+  const addBtn = document.getElementById('gr-add') as HTMLButtonElement;
+  const err = document.getElementById('gr-error')!;
+  const result = document.getElementById('gr-result')!;
+  const card = document.getElementById('gr-card')!;
+  const share = document.getElementById('gr-share')!;
+  const foot = card.querySelector('.t-foot')!.textContent!;
+  const MIN = 3;
+  const MAX = 8;
+
+  function renumber() {
+    const rows = rowsEl.querySelectorAll<HTMLElement>('.gr-row');
+    rows.forEach((r, i) => {
+      r.querySelector('.gr-no')!.textContent = String(i + 1);
+      const input = r.querySelector<HTMLInputElement>('input')!;
+      input.placeholder = i === 0 ? '내 이름' : `친구 ${i}`;
+      input.setAttribute('aria-label', `${i + 1}번째 사람 이름`);
+      r.querySelector<HTMLButtonElement>('.gr-del')!.hidden = rows.length <= MIN;
+    });
+    addBtn.disabled = rows.length >= MAX;
+    addBtn.textContent = rows.length >= MAX ? '최대 8명까지예요' : '사람 추가';
+  }
+
+  function addRow() {
+    const node = tpl.content.firstElementChild!.cloneNode(true) as HTMLElement;
+    node.querySelector('.gr-del')!.addEventListener('click', () => {
+      node.remove();
+      renumber();
+    });
+    rowsEl.appendChild(node);
+    renumber();
+    return node;
+  }
+
+  for (let i = 0; i < MIN; i++) addRow();
+  addBtn.addEventListener('click', () => addRow().querySelector('input')!.focus());
+
+  const NS = 'http://www.w3.org/2000/svg';
+  function svgEl<K extends keyof SVGElementTagNameMap>(tag: K, attrs: Record<string, string | number>) {
+    const el = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    return el;
+  }
+
+  function drawMap(people: { name: string; mbti: string }[], pairs: { i: number; j: number; s: number }[], best: number, worst: number) {
+    const W = 340;
+    const H = people.length > 5 ? 352 : 322;
+    const cx = W / 2;
+    const cy = H / 2 - 4;
+    const rx = 122;
+    const ry = H / 2 - 64;
+    const pos = people.map((_, i) => {
+      const ang = -Math.PI / 2 + (i / people.length) * Math.PI * 2;
+      return [cx + rx * Math.cos(ang), cy + ry * Math.sin(ang)];
+    });
+    const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': '모임 관계도' });
+    pairs.forEach((p, k) => {
+      const [x1, y1] = pos[p.i];
+      const [x2, y2] = pos[p.j];
+      let stroke = 'var(--ink-3)';
+      let width = 1.2;
+      let op = 0.45;
+      let dash = '';
+      if (k === best) [stroke, width, op] = ['var(--jusa)', 5, 1];
+      else if (k === worst) [stroke, width, op, dash] = ['var(--ink-2)', 1.6, 0.9, '5 5'];
+      else if (p.s >= 90) [stroke, width, op] = ['var(--jusa)', 2.6, 0.85];
+      else if (p.s >= 83) [stroke, width, op] = ['var(--jusa)', 1.8, 0.55];
+      else if (p.s < 77) [width, op, dash] = [1, 0.4, '2 4'];
+      const line = svgEl('line', { x1, y1, x2, y2, stroke, 'stroke-width': width, 'stroke-opacity': op, 'stroke-linecap': 'round' });
+      if (dash) line.setAttribute('stroke-dasharray', dash);
+      svg.appendChild(line);
+    });
+    people.forEach((p, i) => {
+      const [x, y] = pos[i];
+      const g = svgEl('g', {});
+      const sz = 54;
+      g.appendChild(svgEl('circle', { cx: x, cy: y, r: sz / 2 + 3, fill: 'var(--card)', stroke: 'var(--line)', 'stroke-width': 1.5 }));
+      const face = svgEl('g', { transform: `translate(${x - sz / 2} ${y - sz / 2}) scale(${sz / 120})` });
+      face.innerHTML = charInner(MBTI_CHAR[p.mbti], 'happy');
+      g.appendChild(face);
+      const label = svgEl('text', { x, y: y + sz / 2 + 17, 'text-anchor': 'middle', fill: 'var(--ink)', 'font-size': 14, 'font-weight': 700, 'font-family': 'Pretendard Variable, sans-serif' });
+      label.textContent = p.name.length > 5 ? p.name.slice(0, 5) + '…' : p.name;
+      g.appendChild(label);
+      const mb = svgEl('text', { x, y: y + sz / 2 + 31, 'text-anchor': 'middle', fill: 'var(--ink-3)', 'font-size': 11, 'font-weight': 700, 'font-family': 'Hahmlet Variable, serif' });
+      mb.textContent = p.mbti;
+      g.appendChild(mb);
+      svg.appendChild(g);
+    });
+    return svg;
+  }
+
+  function assignRoles(people: { mbti: string }[]) {
+    const used = new Set<string>();
+    return people.map((p) => {
+      const prefs = D.pref[p.mbti];
+      const role = prefs.find((r) => !used.has(r)) ?? prefs[0];
+      used.add(role);
+      return role;
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const people = [...rowsEl.querySelectorAll<HTMLElement>('.gr-row')].map((r, i) => ({
+      name: r.querySelector<HTMLInputElement>('input')!.value.trim() || (i === 0 ? '나' : `친구 ${i}`),
+      mbti: r.querySelector<HTMLSelectElement>('select')!.value,
+    }));
+    const missing = people.findIndex((p) => !p.mbti);
+    if (missing >= 0) {
+      err.textContent = `${missing + 1}번째 사람의 MBTI를 골라 주세요`;
+      return;
+    }
+    err.textContent = '';
+    await new Promise<void>((done) =>
+      openGate({ name: `${people.length}명 모임의 `, label: '케미를 분석하고 있어요', steps: ['둘씩 짝을 짓는 중', '궁합 점수를 매기는 중', '관계도를 그리는 중', '역할을 나누는 중'], onDone: done, chars: people.slice(0, 3).map((p) => MBTI_CHAR[p.mbti]), test: 'group', ms: 3600 }),
+    );
+
+    const pairs: { i: number; j: number; s: number }[] = [];
+    for (let i = 0; i < people.length; i++)
+      for (let j = i + 1; j < people.length; j++) pairs.push({ i, j, s: D.table[people[i].mbti][people[j].mbti] });
+    const avg = Math.round(pairs.reduce((a, p) => a + p.s, 0) / pairs.length);
+    let best = 0;
+    let worst = 0;
+    pairs.forEach((p, k) => {
+      if (p.s > pairs[best].s) best = k;
+      if (p.s < pairs[worst].s) worst = k;
+    });
+    if (best === worst) worst = -1;
+    const vibe = groupVibe(avg);
+    const roles = assignRoles(people);
+    const nm = (k: number) => `${people[pairs[k].i].name}, ${people[pairs[k].j].name}`;
+
+    const data = {
+      kicker: `우리 모임 ${people.length}명`,
+      name: vibe.name,
+      big: `${avg}점`,
+      line: vibe.line,
+      rows: [['최고의 짝꿍', nm(best)], ...(worst >= 0 ? [['의외의 조합', nm(worst)]] : [])] as [string, string][],
+      seal: '群',
+      scene: { chars: people.slice(0, 4).map((p) => MBTI_CHAR[p.mbti]), theme: 'group' as const, mood: 'happy' as const },
+    };
+    fillTalisman(card, data);
+
+    const map = document.getElementById('gr-map')!;
+    map.innerHTML = '';
+    map.appendChild(drawMap(people, pairs, best, worst));
+
+    document.getElementById('gr-roles')!.innerHTML = people
+      .map(
+        (p, i) => `<li class="row-link" style="align-items:flex-start">
+          <span class="thumb">${charSvg(MBTI_CHAR[p.mbti], 'happy')}</span>
+          <span class="flex-1"><span class="block font-semibold">${escapeHtml(p.name)} <span class="text-[13px] text-ink-3">${p.mbti}</span> <span class="text-jusa">${escapeHtml(roles[i])}</span></span>
+          <span class="block text-[14px] text-ink-2">${escapeHtml(D.roles[roles[i]])}</span></span></li>`,
+      )
+      .join('');
+
+    const sorted = [...pairs].sort((a, b) => b.s - a.s);
+    document.getElementById('gr-pairs')!.innerHTML = sorted
+      .map(
+        (p, k) => `<li class="flex items-center gap-3 py-3">
+          <span class="w-6 text-center font-display font-extrabold text-ink-3">${k + 1}</span>
+          <a class="flex-1 font-semibold hover:underline" href="/mbti-match/${people[p.i].mbti.toLowerCase()}-${people[p.j].mbti.toLowerCase()}/">${escapeHtml(people[p.i].name)} × ${escapeHtml(people[p.j].name)}
+            <span class="ml-1 text-[13px] font-normal text-ink-3">${people[p.i].mbti}, ${people[p.j].mbti}</span></a>
+          <span class="font-display text-[18px] font-extrabold ${k === 0 ? 'text-jusa' : ''}">${p.s}</span></li>`,
+      )
+      .join('');
+
+    result.hidden = false;
+    replayReveal(card);
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    updateShare(share, {
+      title: `우리 모임 케미 ${avg}점, ${vibe.name}`,
+      text: vibe.line,
+      talisman: { head: card.querySelector('.t-head')!.textContent!, ...data, keys: [...new Set(roles)].slice(0, 4), foot },
+    });
+    track('test_complete', { test: 'group', result: String(people.length) });
+  });
+</script>

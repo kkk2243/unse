@@ -1,0 +1,267 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Gate from '../../components/Gate.astro';
+import { catalogById } from '../../data/catalog';
+import Talisman from '../../components/Talisman.astro';
+import ShareBar from '../../components/ShareBar.astro';
+import Faq from '../../components/Faq.astro';
+import Related from '../../components/Related.astro';
+import Disclaimer from '../../components/Disclaimer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import { faqLd } from '../../lib/seo';
+
+const item = catalogById('name-match');
+const faq = [
+  {
+    q: '이름 궁합은 어떻게 계산하나요?',
+    a: '두 이름을 한 글자씩 번갈아 적고, 글자마다 자음과 모음의 획수를 더해 일의 자리만 남겨요. 그다음 이웃한 숫자끼리 더해 일의 자리만 남기는 걸 두 숫자가 남을 때까지 반복해요. 마지막 두 숫자가 궁합 퍼센트예요.',
+  },
+  { q: '순서를 바꾸면 결과가 왜 달라지나요?', a: '누구 이름을 먼저 쓰느냐에 따라 숫자가 섞이는 순서가 달라져서예요. 그래서 "내가 너를 생각하는 마음"과 "네가 나를 생각하는 마음"을 따로 보여드려요.' },
+  { q: '성까지 넣어야 하나요?', a: '보통은 성을 빼고 이름만 넣지만, 성까지 넣어서 계산하는 방식도 있어요. 둘 다 해 보고 마음에 드는 쪽을 믿으셔도 돼요.' },
+];
+---
+
+<Base
+  title="이름 궁합 – 획수로 보는 궁합 계산기"
+  description="두 사람 이름의 획수로 계산하는 이름 궁합. 어릴 때 공책에 쓰던 그 방식 그대로, 계산 과정을 한 줄씩 보여드려요. 내가 너를, 네가 나를 생각하는 마음을 따로 확인해 보세요."
+  ogImage="/og/test-name-match.png"
+  crumbs={[{ name: '궁합', path: '/category/love/' }, { name: '이름 궁합', path: '/love/name-match/' }]}
+  jsonLd={[faqLd(faq)]}
+>
+  <div class="col pt-2">
+    <PageHero title="이름 궁합" lead="두 이름을 번갈아 적고 획수를 더해 나가는, 어릴 때 공책에 쓰던 그 계산 그대로예요." chars={item.chars} theme="love" />
+
+    <form class="card mt-3" id="nm-form" novalidate>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="field-label" for="nm-a">내 이름</label>
+          <input class="field" id="nm-a" name="a" maxlength="5" autocomplete="off" placeholder="예: 서연" inputmode="text" />
+        </div>
+        <div>
+          <label class="field-label" for="nm-b">상대 이름</label>
+          <input class="field" id="nm-b" name="b" maxlength="5" autocomplete="off" placeholder="예: 도윤" />
+        </div>
+      </div>
+      <p class="mt-2 min-h-[20px] text-[13.5px] font-semibold text-jusa" id="nm-error" role="alert"></p>
+      <button type="submit" class="btn btn-primary btn-block mt-1">궁합 계산하기</button>
+      <p class="mt-2 text-center text-[13px] text-ink-3">이름은 이 기기 안에서만 계산하고 저장하지 않아요</p>
+    </form>
+
+    <div id="nm-result" hidden class="mt-3">
+      <section class="card">
+        <h2 class="card-title">계산 과정</h2>
+        <div class="pyramid mt-4" id="nm-pyramid" aria-label="계산 과정"></div>
+      </section>
+
+      <div class="mt-3" id="nm-card">
+        <Talisman head="이름 궁합" name="" seal="名" chars={item.chars} theme="love" headingLevel="h2" />
+      </div>
+
+      <section class="card mt-3">
+        <div class="text-[15.5px]" id="nm-reverse"></div>
+        <div class="mt-5">
+          <ShareBar title="이름 궁합" text="이름 획수로 보는 궁합" path="/love/name-match/" ogImage="/og/test-name-match.png" campaign="name-match" id="nm-share" />
+        </div>
+        <button type="button" class="btn btn-line btn-block mt-5" id="nm-again">다른 이름으로 하기</button>
+      </section>
+    </div>
+
+    <AdSlot name="test-intro" />
+
+    <article class="card prose-lab">
+      <h2>이름 궁합 계산법</h2>
+      <p>
+        이름 궁합은 한글 자음과 모음의 획수로 두 사람의 궁합을 보는 놀이예요. 예를 들어 ㄱ은 2획, ㅇ은 1획, ㅏ는 2획으로 세요. 한 글자의
+        획수를 모두 더한 뒤 일의 자리만 남기면 그 글자의 숫자가 돼요.
+      </p>
+      <p>
+        두 사람의 이름을 한 글자씩 번갈아 적고 각 글자의 숫자를 적은 다음, 바로 옆 숫자끼리 더해서 일의 자리만 아래 줄에 적어요. 이걸 숫자가
+        두 개 남을 때까지 반복하면 그 두 숫자가 궁합 퍼센트가 돼요. 00이 나오면 100%로 쳐요.
+      </p>
+      <p>
+        누구 이름을 먼저 쓰느냐에 따라 결과가 달라서, 이 계산기는 두 방향을 모두 보여드려요. 결과 카드에는 두 이름에서 뽑은 동물 친구가 함께
+        그려져요. 성까지 넣거나 별명으로 해 보는 것도 재미있어요.
+      </p>
+    </article>
+
+    <section class="card" aria-labelledby="faq">
+      <h2 id="faq" class="card-title">자주 묻는 질문</h2>
+      <Faq items={faq} />
+    </section>
+
+    <Related id="name-match" />
+    <Disclaimer />
+  </div>
+  <Gate slot="overlay" />
+</Base>
+
+<style>
+  .pyramid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Hahmlet Variable', serif;
+  }
+  :global(.py-row) {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+  }
+  :global(.py-cell) {
+    width: 30px;
+    text-align: center;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--ink-2);
+  }
+  :global(.py-letter) {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  :global(.py-letter.b) {
+    color: var(--jusa);
+  }
+  :global(.py-final .py-cell) {
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--jusa);
+    width: 36px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.py-row.pop) {
+      animation: py-in 0.25s ease-out both;
+    }
+  }
+  @keyframes py-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+</style>
+
+<script>
+  import { isHangulName, namePyramid, nameTier, interleave, callName, josa } from '../../lib/hangul';
+  import { fillTalisman, replayReveal } from '../../lib/talisman-dom';
+  import { updateShare } from '../../lib/share';
+  import { track } from '../../lib/ui';
+  import { openGate } from '../../lib/gate';
+  import { hashString } from '../../lib/saju';
+  import { ZODIAC_IDS } from '../../art/characters';
+
+  // 이름마다 정해진 동물 친구 (같은 이름이면 항상 같은 동물)
+  const pet = (name: string) => ZODIAC_IDS[hashString(name + 'pet') % ZODIAC_IDS.length];
+
+  const form = document.getElementById('nm-form') as HTMLFormElement;
+  const err = document.getElementById('nm-error')!;
+  const result = document.getElementById('nm-result')!;
+  const pyramid = document.getElementById('nm-pyramid')!;
+  const card = document.getElementById('nm-card')!;
+  const reverse = document.getElementById('nm-reverse')!;
+  const share = document.getElementById('nm-share')!;
+  const foot = document.querySelector('#nm-card .t-foot')!.textContent!;
+
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  async function draw(a: string, b: string) {
+    const { rows, letters } = namePyramid(a, b);
+    pyramid.innerHTML = '';
+    const first = interleave([...a].map(() => 'a').join(''), [...b].map(() => 'b').join(''));
+    const head = document.createElement('div');
+    head.className = 'py-row pop';
+    letters.forEach((ch, i) => {
+      const s = document.createElement('span');
+      s.className = `py-cell py-letter ${first[i]}`;
+      s.textContent = ch;
+      head.appendChild(s);
+    });
+    pyramid.appendChild(head);
+    for (let r = 0; r < rows.length; r++) {
+      if (!reduce) await wait(r === 0 ? 120 : 170);
+      const row = document.createElement('div');
+      row.className = `py-row pop${r === rows.length - 1 ? ' py-final' : ''}`;
+      rows[r].forEach((n) => {
+        const s = document.createElement('span');
+        s.className = 'py-cell';
+        s.textContent = String(n);
+        row.appendChild(s);
+      });
+      pyramid.appendChild(row);
+    }
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const a = (form.elements.namedItem('a') as HTMLInputElement).value.trim().replace(/\s/g, '');
+    const b = (form.elements.namedItem('b') as HTMLInputElement).value.trim().replace(/\s/g, '');
+    if (!a || !b) {
+      err.textContent = '두 사람의 이름을 모두 적어 주세요';
+      return;
+    }
+    if (!isHangulName(a) || !isHangulName(b)) {
+      err.textContent = '한글 이름만 계산할 수 있어요 (완성된 글자, 5자 이내)';
+      return;
+    }
+    err.textContent = '';
+    (document.activeElement as HTMLElement)?.blur();
+    await new Promise<void>((done) =>
+      openGate({ name: `${a}${josa(a, '과', '와')} ${b}의 `, label: '이름 획수를 세고 있어요', steps: ['이름을 번갈아 적는 중', '자음과 모음 획수를 세는 중', '숫자를 더해 나가는 중', '궁합 퍼센트를 내는 중'], onDone: done, chars: [pet(a), pet(b), 'owl'], test: 'name-match', ms: 3200 }),
+    );
+    result.hidden = false;
+    result.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+
+    const ab = namePyramid(a, b).percent;
+    const ba = namePyramid(b, a).percent;
+    const tier = nameTier(ab);
+
+    card.classList.remove('reveal');
+    card.style.visibility = 'hidden';
+    await draw(a, b);
+    if (!reduce) await wait(350);
+    card.style.visibility = '';
+
+    const t = {
+      kicker: `${callName(a, '가')} ${callName(b, '를')} 생각하는 마음`,
+      name: tier.name,
+      big: `${ab}%`,
+      line: tier.line,
+      seal: '名',
+      scene: { chars: [pet(a), pet(b)], theme: 'love' as const, mood: ab >= 35 ? ('happy' as const) : ('normal' as const) },
+    };
+    fillTalisman(card, t);
+    replayReveal(card);
+    reverse.innerHTML = '';
+    const p = document.createElement('p');
+    p.innerHTML = `거꾸로, <b></b>은 <b class="text-jusa"></b>예요.`;
+    p.querySelectorAll('b')[0].textContent = `${callName(b, '가')} ${callName(a, '를')} 생각하는 마음`;
+    p.querySelectorAll('b')[1].textContent = `${ba}%`;
+    reverse.appendChild(p);
+
+    updateShare(share, {
+      title: `우리 이름 궁합 ${ab}% 나왔어`,
+      text: `${tier.name}. ${tier.line}`,
+      talisman: {
+        head: card.querySelector('.t-head')!.textContent!,
+        kicker: t.kicker,
+        name: tier.name,
+        big: `${ab}%`,
+        line: tier.line,
+        seal: '名',
+        foot,
+        scene: t.scene,
+      },
+    });
+    track('test_complete', { test: 'name-match', result: String(ab) });
+  });
+
+  document.getElementById('nm-again')!.addEventListener('click', () => {
+    result.hidden = true;
+    form.reset();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    (form.elements.namedItem('a') as HTMLInputElement).focus();
+  });
+</script>

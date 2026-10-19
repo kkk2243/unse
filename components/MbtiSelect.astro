@@ -1,0 +1,26 @@
+---
+import { MBTI_CODES, MBTI } from '../data/mbti/types';
+
+interface Props {
+  name: string;
+  id?: string;
+  label?: string;
+  value?: string;
+  required?: boolean;
+  compact?: boolean;
+  extra?: string; // 입력 화면에서 함께 넘길 값이면 비었을 때 보여 줄 안내 문구
+}
+const { name, id = name, label, value = '', required = true, compact = false, extra } = Astro.props;
+---
+
+{label && <label for={id} class="field-label">{label}</label>}
+<select class="field" name={name} id={id} required={required} data-extra={extra} style={compact ? 'min-height:48px;font-size:16px' : ''}>
+  <option value="" selected={!value} disabled>MBTI 선택</option>
+  {
+    MBTI_CODES.map((c) => (
+      <option value={c} selected={value === c}>
+        {compact ? c : `${c} ${MBTI[c].name}`}
+      </option>
+    ))
+  }
+</select>

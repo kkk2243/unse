@@ -1,0 +1,106 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import Faq from '../../components/Faq.astro';
+import Related from '../../components/Related.astro';
+import { DREAMS, DREAM_CATS, SIGN_NAME, type DreamCat } from '../../data/dreams';
+import { charSvg } from '../../art/characters';
+import { faqLd } from '../../lib/seo';
+
+const cats = Object.entries(DREAM_CATS) as [DreamCat, string][];
+const faq = [
+  { q: '꿈해몽은 믿을 만한가요?', a: '꿈해몽은 오랜 세월 전해 온 상징 풀이와 요즘의 심리 해석을 섞은 재미있는 읽을거리예요. 꿈이 미래를 정해 주지는 않지만, 내 마음 상태를 돌아보는 계기로 삼기 좋아요.' },
+  { q: '나쁜 꿈을 꾸면 어떻게 하나요?', a: '흉몽으로 알려진 꿈도 대부분 "조심하라"는 신호 정도로 풀어요. 그날은 운전과 약속을 조금 더 챙기고, 충분히 쉬면 충분해요.' },
+  { q: '꿈은 왜 금방 잊어버릴까요?', a: '깨어나는 순간 기억이 빠르게 흐려지기 때문이에요. 생생한 꿈은 일어나자마자 휴대폰 메모에 적어 두면 해몽을 찾아보기 좋아요.' },
+];
+---
+
+<Base
+  title="꿈해몽 사전, 길몽 흉몽 풀이"
+  description="뱀 꿈, 돼지 꿈, 이빨 빠지는 꿈, 똥 꿈, 죽는 꿈까지. 자주 꾸는 꿈 50가지를 상황별로 나눠 길몽인지 흉몽인지, 어떤 뜻인지 쉽게 풀어 드려요."
+  ogImage="/og/test-dream.png"
+  crumbs={[{ name: '꿈해몽', path: '/dream/' }]}
+  jsonLd={[faqLd(faq)]}
+  back="/"
+  headerTitle="꿈해몽"
+>
+  <div class="col pt-2">
+    <PageHero title="꿈해몽 사전" lead="어젯밤 꿈, 무슨 뜻일까? 자주 꾸는 꿈 50가지를 상황별로 풀어 드려요." chars={['snake', 'pig', 'dragon']} theme="night" />
+
+    <section class="card mt-3">
+      <label for="dr-q" class="field-label">꿈 검색</label>
+      <input id="dr-q" class="field" type="search" placeholder="예: 뱀, 이빨, 돈, 시험" autocomplete="off" />
+      <div class="mt-3 flex flex-wrap gap-1.5" id="dr-cats">
+        <button type="button" class="chip" data-cat="" aria-pressed="true">전체</button>
+        {cats.map(([k, v]) => <button type="button" class="chip" data-cat={k} aria-pressed="false">{v}</button>)}
+      </div>
+    </section>
+
+    <section class="card">
+      <ul class="divide-y divide-[var(--line)]" id="dr-list">
+        {
+          DREAMS.map((d) => (
+            <li data-cat={d.cat} data-q={`${d.name} ${d.summary} ${d.cases.map((c) => c[0]).join(' ')}`}>
+              <a href={`/dream/${d.slug}/`} class="flex items-center gap-3 py-3">
+                <span class="block h-12 w-12 flex-none" set:html={charSvg(d.char, d.sign === 'caution' ? 'normal' : 'happy')} />
+                <span class="min-w-0 flex-1">
+                  <span class="flex items-center gap-2">
+                    <b class="text-[16px]">{d.name}</b>
+                    <span class={`tag ${d.sign === 'caution' ? 'tag-red' : ''}`}>{SIGN_NAME[d.sign]}</span>
+                  </span>
+                  <span class="mt-0.5 block text-[14px] leading-snug text-ink-2">{d.summary}</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="py-6 text-center text-[15px] text-ink-2" id="dr-empty" hidden>찾는 꿈이 아직 없어요. 비슷한 단어로 다시 찾아보세요.</p>
+    </section>
+
+    <AdSlot name="list-infeed" format="fluid" />
+
+    <article class="card prose-lab">
+      <h2>꿈해몽을 볼 때 알아 두면 좋은 것</h2>
+      <p>전통 해몽에는 "반대로 풀리는 꿈"이 많아요. 죽는 꿈이나 우는 꿈, 똥 꿈처럼 기분은 찜찜해도 길몽으로 풀리는 경우가 대표적이에요. 반대로 기분 좋은 꿈이 조심하라는 뜻일 때도 있어요.</p>
+      <p>요즘에는 꿈을 내 마음의 거울로 보는 해석도 많이 써요. 쫓기는 꿈, 시험 꿈, 지각하는 꿈은 실제로 스트레스가 많을 때 자주 꾸는 꿈이에요. 사주 연구원의 꿈해몽은 전통 풀이와 마음 해석을 함께 담았어요.</p>
+    </article>
+
+    <section class="card">
+      <h2 class="card-title">자주 묻는 질문</h2>
+      <Faq items={faq} />
+    </section>
+    <Related id="dream" />
+  </div>
+</Base>
+
+<script>
+  const q = document.getElementById('dr-q') as HTMLInputElement;
+  const items = [...document.querySelectorAll<HTMLElement>('#dr-list > li')];
+  const empty = document.getElementById('dr-empty')!;
+  let cat = '';
+  function apply() {
+    const words = q.value.trim().replace(/꿈/g, '').split(/\s+/).filter(Boolean);
+    let n = 0;
+    for (const li of items) {
+      const ok = (!cat || li.dataset.cat === cat) && words.every((w) => li.dataset.q!.includes(w));
+      li.hidden = !ok;
+      if (ok) n++;
+    }
+    empty.hidden = n > 0;
+  }
+  q.addEventListener('input', apply);
+  document.getElementById('dr-cats')!.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-cat]');
+    if (!b) return;
+    cat = b.dataset.cat!;
+    document.querySelectorAll('#dr-cats .chip').forEach((c) => c.setAttribute('aria-pressed', String(c === b)));
+    apply();
+  });
+  const pre = new URLSearchParams(location.search).get('q');
+  if (pre) {
+    q.value = pre;
+    apply();
+  }
+</script>
