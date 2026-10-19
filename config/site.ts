@@ -6,8 +6,8 @@ export const SITE = {
   description:
     '2028년 신년운세, 오늘의 운세, 정통 사주 풀이, 사주 궁합, MBTI 궁합까지 무료로. 결과는 귀여운 부적 카드로 저장해서 친구에게 보내 보세요.',
   locale: 'ko_KR',
-  // 문의 메일: 실제 운영 메일로 바꿔주세요.
-  contactEmail: 'hello@example.com',
+  // 문의 메일: 
+  contactEmail: 'ycmbs3@gmail.com',
   // 공개 시작일 (정책 페이지 시행일, '새로 나왔어요' 기준)
   launchedAt: '2026-10-18',
 };
