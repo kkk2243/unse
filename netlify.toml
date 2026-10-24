@@ -20,3 +20,14 @@
   for = "/og/*"
   [headers.values]
     Cache-Control = "public, max-age=86400"
+
+# 2028년 운세를 없애면서 옛 주소는 2027년으로 보냄
+[[redirects]]
+  from = "/zodiac/2028/*"
+  to = "/zodiac/2027/:splat"
+  status = 301
+
+[[redirects]]
+  from = "/guide/year-2027-2028/"
+  to = "/guide/year-2027/"
+  status = 301

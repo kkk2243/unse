@@ -30,7 +30,6 @@ const path = `/zodiac/${year}/${slug}/`;
 const og = `/og/zodiac/${year}-${slug}.png`;
 const relName = r.rel === '평' ? '무난' : r.rel === '같음' ? '같은 띠의 해' : r.rel;
 const others = ZODIAC_BRANCHES.filter((b) => b !== branch);
-const otherYear = YEARS.find((y) => y !== year)!;
 const samjaeKind = r.samjae as keyof typeof SAMJAE_TEXT | null;
 
 const faq = [
@@ -134,7 +133,7 @@ const faq = [
     </section>
 
     <a href="/newyear/" class="btn btn-primary btn-block mt-3">내 생년월일로 더 자세히 보기</a>
-    <a href={`/zodiac/${otherYear}/${slug}/`} class="btn btn-line btn-block mt-2">{otherYear}년 {animalName}띠 운세 보기</a>
+    <a href={`/zodiac/${year}/`} class="btn btn-line btn-block mt-2">{year}년 띠별 운세 순위 보기</a>
 
     <AdSlot name="result-article" />
 

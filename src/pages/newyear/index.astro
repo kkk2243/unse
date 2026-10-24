@@ -6,12 +6,11 @@ import { BRANCHES } from '../../data/saju';
 
 const info = YEAR_INFO[DEFAULT_YEAR];
 const sj = samjaeAnimals(yearPillar(DEFAULT_YEAR)[1]).map((x) => `${BRANCHES[x.branch].animal}띠`);
-const sjPrev = samjaeAnimals(yearPillar(2027)[1]).map((x) => `${BRANCHES[x.branch].animal}띠`);
 
 const faq = [
-  { q: '신년운세는 어떻게 계산하나요?', a: `그해를 다스리는 간지(${DEFAULT_YEAR}년은 무신)가 내 사주의 일간에게 어떤 의미인지, 그해의 지지가 내 사주와 합을 이루는지 부딪히는지를 함께 따져요. 열두 달의 월 간지도 하나씩 계산해서 달마다 흐름을 보여드려요.` },
-  { q: `${DEFAULT_YEAR}년 삼재띠는 무엇인가요?`, a: `${DEFAULT_YEAR}년은 ${sj.join(', ')}가 삼재에 들어서는 해예요. 2027년에는 ${sjPrev.join(', ')}가 삼재의 마지막 해를 지나요.` },
-  { q: '2027년 운세도 볼 수 있나요?', a: '네. 입력 화면 맨 위에서 2027년을 고르면 같은 방식으로 2027년 운세를 볼 수 있어요.' },
+  { q: '신년운세는 어떻게 계산하나요?', a: `그해를 다스리는 간지(${DEFAULT_YEAR}년은 정미)가 내 사주의 일간에게 어떤 의미인지, 그해의 지지가 내 사주와 합을 이루는지 부딪히는지를 함께 따져요. 열두 달의 월 간지도 하나씩 계산해서 달마다 흐름을 보여드려요.` },
+  { q: `${DEFAULT_YEAR}년 삼재띠는 무엇인가요?`, a: `${DEFAULT_YEAR}년 삼재띠는 ${sj.join(', ')}예요. 삼재 3년 중 마지막 해인 날삼재라 비교적 가볍게 지나가는 해로 봐요.` },
+  { q: '띠별 운세도 볼 수 있나요?', a: `네. 띠별 운세에서 열두 띠의 ${DEFAULT_YEAR}년 순위와 띠별 풀이를 볼 수 있어요.` },
   { q: '음력 설 전에 태어났으면 띠가 어떻게 되나요?', a: '사주에서는 음력 설이 아니라 입춘(2월 4일 무렵)을 기준으로 해가 바뀌어요. 1~2월 초에 태어났다면 실제 띠가 한 해 앞일 수 있어요.' },
 ];
 ---
@@ -21,7 +20,7 @@ const faq = [
   title={`${DEFAULT_YEAR}년 신년운세`}
   heroTitle={`${DEFAULT_YEAR} 신년운세`}
   lead={`${info.name}, ${info.animal}의 해. 달마다 달라지는 나의 한 해를 미리 살펴보세요.`}
-  desc={`생년월일로 보는 무료 ${DEFAULT_YEAR}년 신년운세와 2027년 운세. ${info.name} ${info.animal}의 해의 총운, 연애운, 결혼운, 재물운, 직장운, 사업운, 건강운, 월별 운세와 삼재를 자세히 풀어 드려요.`}
+  desc={`생년월일로 보는 무료 ${DEFAULT_YEAR}년 신년운세. ${info.name} ${info.animal}의 해의 총운, 연애운, 결혼운, 재물운, 직장운, 사업운, 건강운, 월별 운세와 삼재를 자세히 풀어 드려요.`}
   articleTitle="신년운세는 이렇게 풀어요"
   article={[
     info.line,

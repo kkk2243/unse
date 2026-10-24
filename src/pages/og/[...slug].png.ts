@@ -16,7 +16,7 @@ export const getStaticPaths: GetStaticPaths = () => {
   const paths: { params: { slug: string }; props: { spec: OgSpec } }[] = [];
   const add = (slug: string, spec: OgSpec) => paths.push({ params: { slug }, props: { spec } });
 
-  add('default', { head: '무료 사주, 운세, 궁합', name: SITE.name, line: '2028 신년운세부터 오늘의 운세, 궁합, MBTI까지 귀여운 부적으로 받아 가세요', seal: '四柱', cta: '운세 보러 가기', scene: { chars: ['owl', 'rabbit'], theme: 'night' } });
+  add('default', { head: '무료 사주, 운세, 궁합', name: SITE.name, line: '2027 신년운세부터 오늘의 운세, 궁합, MBTI까지 귀여운 부적으로 받아 가세요', seal: '四柱', cta: '운세 보러 가기', scene: { chars: ['owl', 'rabbit'], theme: 'night' } });
 
   for (const c of CATALOG) {
     add(`test-${c.id}`, { head: SITE.name, name: c.title, line: c.summary, seal: c.seal, scene: { chars: c.chars, theme: c.theme } });

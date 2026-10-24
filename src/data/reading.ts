@@ -254,8 +254,8 @@ export const YEAR_INFO: Record<number, { name: string; animal: string; char: str
     line: '2028년은 무신년, 황금 원숭이의 해예요. 단단한 흙(戊)이 쇠(申)를 길러 내는 해라 재주와 기술이 빛나고, 변화와 기회가 빠르게 오가는 흐름이에요.',
   },
 };
-export const YEARS = [2028, 2027];
-export const DEFAULT_YEAR = 2028;
+export const YEARS = [2027];
+export const DEFAULT_YEAR = 2027;
 
 export const SAMJAE_TEXT: Record<'들삼재' | '눌삼재' | '날삼재', string> = {
   들삼재: '올해는 내 띠에 삼재가 시작되는 \'들삼재\'예요. 삼재는 3년 동안 몸과 일을 조심하라는 옛 풍습이지 겁낼 일은 아니에요. 큰일을 새로 벌이기보다 하던 일을 단단히 다지고, 이사나 큰 계약은 한 번 더 따져 보는 정도면 충분해요.',

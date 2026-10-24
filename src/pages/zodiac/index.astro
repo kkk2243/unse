@@ -12,13 +12,13 @@ import { zodiacYearReading } from '../../lib/reading';
 ---
 
 <Base
-  title="2028년, 2027년 띠별 신년운세"
-  description="열두 띠의 2028년 무신년, 2027년 정미년 운세. 쥐띠부터 돼지띠까지 띠별 총운, 재물운, 연애운, 직장운, 건강운과 삼재띠를 한눈에 확인하세요."
+  title="2027년 띠별 신년운세"
+  description="열두 띠의 2027년 정미년 운세. 쥐띠부터 돼지띠까지 띠별 총운, 재물운, 연애운, 직장운, 건강운과 삼재띠를 한눈에 확인하세요."
   ogImage="/og/test-zodiac.png"
   crumbs={[{ name: '띠별 운세', path: '/zodiac/' }]}
 >
   <div class="col pt-2">
-    <PageHero title="띠별 신년운세" lead="내 띠를 눌러 2028년과 2027년의 흐름을 확인해 보세요." chars={['tiger', 'rabbit', 'dragon', 'pig']} theme="luck" />
+    <PageHero title="띠별 신년운세" lead="내 띠를 눌러 2027년 정미년의 흐름을 확인해 보세요." chars={['tiger', 'rabbit', 'dragon', 'pig']} theme="luck" />
 
     {
       YEARS.map((y) => {
@@ -48,6 +48,7 @@ import { zodiacYearReading } from '../../lib/reading';
                 );
               })}
             </ul>
+            <a href={`/zodiac/${y}/`} class="btn btn-line btn-block mt-3">{y}년 띠별 운세 순위 보기</a>
           </section>
         );
       })
