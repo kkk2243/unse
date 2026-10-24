@@ -19,6 +19,20 @@ export interface CatalogItem {
 
 export const CATALOG: CatalogItem[] = [
   {
+    id: 'baby-name',
+    title: '아기 이름 짓기',
+    short: '아기 이름',
+    summary: '사주에 맞는 한자 이름과 순우리말 이름을 뜻풀이와 함께 추천',
+    path: '/baby-name/',
+    cats: ['saju'],
+    icon: 'baby',
+    chars: ['sheep', 'rabbit'],
+    theme: 'love',
+    seal: '名',
+    publishedAt: '2026-10-20',
+    featured: 2.7,
+  },
+  {
     id: 'saju-mbti',
     title: '사주 MBTI 싱크로율',
     short: '사주 MBTI',

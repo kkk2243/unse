@@ -1,0 +1,256 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Gate from '../../components/Gate.astro';
+import Talisman from '../../components/Talisman.astro';
+import ShareBar from '../../components/ShareBar.astro';
+import Faq from '../../components/Faq.astro';
+import Related from '../../components/Related.astro';
+import Disclaimer from '../../components/Disclaimer.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import { ALL_NAME_PAGES } from '../../lib/baby-name';
+import { faqLd } from '../../lib/seo';
+
+const boys = ALL_NAME_PAGES.filter((x) => x.g !== 'F');
+const girls = ALL_NAME_PAGES.filter((x) => x.g !== 'M');
+const faq = [
+  { q: '이름은 어떤 기준으로 추천하나요?', a: '세 가지를 함께 봐요. 성과 이름 첫소리의 오행이 서로 살려 주는지(소리오행), 아기 사주에 부족한 오행을 한자의 부수 오행으로 채워 주는지(자원오행), 그리고 요즘 부르기 좋은 이름인지예요.' },
+  { q: '생일을 몰라도 되나요?', a: '네. 출산 전이라면 예정일을 넣어도 되고, 비워 두면 사주 보완 없이 소리와 뜻만으로 추천해요. 태어난 뒤 다시 넣어 보면 사주에 맞는 한자로 바뀌어요.' },
+  { q: '추천 한자를 그대로 출생신고에 써도 되나요?', a: '사주 연구원은 대법원 인명용 한자에 흔히 쓰이는 글자 위주로 골랐지만, 출생신고 전에 대법원 전자가족관계등록시스템에서 인명용 한자인지 꼭 확인해 주세요. 획수로 보는 수리 풀이는 넣지 않았어요.' },
+];
+---
+
+<Base
+  title="아기 이름 짓기, 사주로 보는 아기 이름 추천"
+  description="성과 성별, 아기 생일만 넣으면 사주에 부족한 오행을 채우는 한자 이름과 예쁜 순우리말 이름을 추천해 드려요. 한자 뜻풀이와 소리오행까지 무료로 확인하세요."
+  ogImage="/og/test-baby-name.png"
+  crumbs={[{ name: '사주·운세', path: '/category/saju/' }, { name: '아기 이름 짓기', path: '/baby-name/' }]}
+  jsonLd={[faqLd(faq)]}
+  back="/"
+  headerTitle="아기 이름 짓기"
+>
+  <div class="col pt-2">
+    <PageHero title="아기 이름 짓기" lead="성과 성별, 생일을 넣으면 사주에 꼭 맞는 한자 이름과 예쁜 순우리말 이름을 뜻풀이와 함께 추천해 드려요." chars={['sheep', 'rabbit', 'owl']} theme="love" />
+
+    <form class="card mt-3" id="bn-form" novalidate>
+      <div class="grid grid-cols-[1fr_1.4fr] gap-3">
+        <div>
+          <label class="field-label" for="bn-sur">성</label>
+          <input class="field" id="bn-sur" maxlength="2" autocomplete="off" placeholder="예: 김" />
+        </div>
+        <div>
+          <span class="field-label">성별</span>
+          <div class="seg" role="radiogroup" aria-label="성별">
+            <label><input type="radio" name="bn-g" value="M" checked />아들</label>
+            <label><input type="radio" name="bn-g" value="F" />딸</label>
+          </div>
+        </div>
+      </div>
+
+      <span class="field-label mt-5">이름 종류</span>
+      <div class="seg" role="radiogroup" aria-label="이름 종류">
+        <label><input type="radio" name="bn-style" value="all" checked />모두</label>
+        <label><input type="radio" name="bn-style" value="hanja" />한자 이름</label>
+        <label><input type="radio" name="bn-style" value="pure" />순우리말</label>
+      </div>
+
+      <label class="mt-5 flex items-center gap-2 text-[15px] font-semibold">
+        <input type="checkbox" id="bn-use-birth" class="h-5 w-5 accent-[var(--jusa)]" checked />
+        아기 생일(또는 출산 예정일)로 사주 보완하기
+      </label>
+      <div id="bn-birth-wrap" class="mt-3">
+        <input class="field" type="date" id="bn-birth" min="2020-01-01" max="2030-12-31" />
+        <p class="mt-1.5 text-[13px] text-ink-3">사주에 부족한 오행을 채우는 한자를 골라 드려요. 양력 날짜로 넣어 주세요.</p>
+      </div>
+
+      <p class="mt-3 min-h-[20px] text-[13.5px] font-semibold text-jusa" id="bn-error" role="alert"></p>
+      <button type="submit" class="btn btn-primary btn-block">이름 추천받기</button>
+      <p class="mt-2 text-center text-[13px] text-ink-3">입력한 정보는 이 기기 안에서만 계산하고 저장하지 않아요</p>
+    </form>
+
+    <div id="bn-result" hidden class="mt-3">
+      <section class="card" id="bn-summary"></section>
+      <div class="mt-3" id="bn-card">
+        <Talisman head="아기 이름 추천" name="" seal="名" chars={['sheep']} theme="love" headingLevel="h2" />
+      </div>
+      <section class="card mt-3">
+        <ShareBar title="아기 이름 짓기" text="사주로 아기 이름을 추천해 줘요" path="/baby-name/" ctaPath="/baby-name/" ogImage="/og/test-baby-name.png" campaign="baby-name" id="bn-share" />
+      </section>
+      <ol class="stack mt-3" id="bn-list"></ol>
+      <button type="button" class="btn btn-line btn-block mt-3" id="bn-more">이름 더 보기</button>
+      <button type="button" class="btn btn-line btn-block mt-2" id="bn-again">조건 바꿔서 다시 보기</button>
+    </div>
+
+    <AdSlot name="test-intro" />
+
+    <article class="card prose-lab">
+      <h2>사주로 아기 이름 짓는 법</h2>
+      <p>예로부터 아기 이름은 사주에 부족한 기운을 채워 주는 방향으로 지었어요. 사주 여덟 글자에 물 기운이 적은 아기라면, 물(水) 부수가 들어간 浩(넓을 호), 潤(윤택할 윤) 같은 한자를 이름에 넣어 균형을 맞추는 식이에요. 이것을 자원오행이라고 해요.</p>
+      <p>또 하나는 소리오행이에요. 이름을 부를 때 나는 첫소리를 오행으로 나눠서(ㄱㅋ 나무, ㄴㄷㄹㅌ 불, ㅇㅎ 흙, ㅅㅈㅊ 쇠, ㅁㅂㅍ 물) 성부터 이름 끝까지 서로 살려 주는 흐름이면 좋은 이름으로 봐요. 사주 연구원은 이 두 가지와 요즘 부르기 좋은 이름인지를 함께 따져서 추천해요.</p>
+      <p>한자의 획수로 보는 수리 풀이는 책과 작명소마다 기준이 달라서 넣지 않았어요. 마음에 드는 이름을 고른 뒤 출생신고 전에는 대법원 인명용 한자인지 꼭 확인해 주세요.</p>
+    </article>
+
+    <section class="card">
+      <h2 class="card-title">인기 이름 뜻 모아 보기</h2>
+      <h3 class="mt-3 text-[14px] font-bold text-ink-2">남자아이 이름</h3>
+      <div class="mt-2 flex flex-wrap gap-1.5">{boys.map((x) => <a href={`/baby-name/${x.slug}/`} class="chip">{x.given}</a>)}</div>
+      <h3 class="mt-4 text-[14px] font-bold text-ink-2">여자아이 이름</h3>
+      <div class="mt-2 flex flex-wrap gap-1.5">{girls.map((x) => <a href={`/baby-name/${x.slug}/`} class="chip">{x.given}</a>)}</div>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">자주 묻는 질문</h2>
+      <Faq items={faq} />
+    </section>
+    <Related id="baby-name" />
+    <Disclaimer />
+  </div>
+  <Gate slot="overlay" />
+</Base>
+
+<style is:global>
+  .bn-card .bn-rank {
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: var(--jusa);
+    font-size: 15px;
+  }
+  .bn-card details summary {
+    cursor: pointer;
+    list-style: none;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--ink-2);
+  }
+  .bn-card details summary::-webkit-details-marker {
+    display: none;
+  }
+</style>
+
+<script>
+  import { recommend, isHangulSyllable, type Rec, type Need } from '../../lib/baby-name';
+  import { calcSaju } from '../../lib/saju';
+  import { luckyElements } from '../../lib/reading';
+  import { ELEMENTS } from '../../data/saju';
+  import { fillTalisman, replayReveal } from '../../lib/talisman-dom';
+  import { updateShare } from '../../lib/share';
+  import { openGate } from '../../lib/gate';
+  import { escapeHtml as e, track } from '../../lib/ui';
+
+  const form = document.getElementById('bn-form') as HTMLFormElement;
+  const sur = document.getElementById('bn-sur') as HTMLInputElement;
+  const useBirth = document.getElementById('bn-use-birth') as HTMLInputElement;
+  const birth = document.getElementById('bn-birth') as HTMLInputElement;
+  const err = document.getElementById('bn-error')!;
+  const list = document.getElementById('bn-list')!;
+  const more = document.getElementById('bn-more') as HTMLButtonElement;
+  let recs: Rec[] = [];
+  let shown = 0;
+
+  useBirth.addEventListener('change', () => (document.getElementById('bn-birth-wrap')!.hidden = !useBirth.checked));
+  const val = (n: string) => (form.elements.namedItem(n) as RadioNodeList).value;
+  const el = (k: string) => `${ELEMENTS[k as keyof typeof ELEMENTS].name}(${ELEMENTS[k as keyof typeof ELEMENTS].hanja})`;
+
+  function cardHtml(r: Rec, i: number) {
+    const head = `<div class="flex items-center gap-3"><span class="bn-rank">${i + 1}</span>
+      <b class="font-display text-[26px] leading-none">${e(r.full)}</b>
+      ${r.kind === 'hanja' ? `<span class="font-display text-[19px] text-ink-2">${r.hanja.map((h) => h.h).join('')}</span>` : '<span class="tag">순우리말</span>'}
+      <span class="ml-auto font-display text-[17px] font-extrabold text-jusa">${r.score}</span></div>`;
+    if (r.kind === 'hanja') {
+      return `<li class="card bn-card">${head}
+        <p class="mt-3 text-[15.5px] leading-relaxed">${e(r.meaning)}</p>
+        ${r.sajuText ? `<p class="mt-2 text-[14.5px] text-ink-2">${e(r.sajuText)}</p>` : ''}
+        <details class="mt-3"><summary>한자 풀이와 소리오행 보기 ▾</summary>
+          <ul class="mt-3 space-y-2">${r.hanja
+            .map((h) => `<li class="flex items-center gap-3 rounded-[12px] bg-[var(--wash)] px-3 py-2"><span class="font-display text-[26px]">${h.h}</span><span class="flex-1"><b>${e(h.gloss)}</b><span class="block text-[13.5px] text-ink-2">${e(h.idea)}, 부수 오행 ${el(h.el)}</span></span></li>`)
+            .join('')}</ul>
+          <p class="mt-3 text-[14.5px]"><b>소리오행</b> ${e(r.sound.flow)}</p>
+          <p class="mt-1 text-[14.5px] text-ink-2">${e(r.sound.text)}</p>
+          <a href="/baby-name/${r.slug}/" class="btn btn-line btn-sm mt-3 w-full">${e(r.given)} 이름 뜻 더 보기</a>
+        </details></li>`;
+    }
+    return `<li class="card bn-card">${head}
+      <p class="mt-3 text-[15.5px] font-semibold">"${e(r.pure.mean)}"</p>
+      <p class="mt-1 text-[15px] leading-relaxed">${e(r.pure.story)}</p>
+      <details class="mt-3"><summary>소리오행 보기 ▾</summary>
+        <p class="mt-3 text-[14.5px]"><b>소리오행</b> ${e(r.sound.flow)}</p>
+        <p class="mt-1 text-[14.5px] text-ink-2">${e(r.sound.text)}</p>
+        <a href="/baby-name/${r.slug}/" class="btn btn-line btn-sm mt-3 w-full">${e(r.given)} 이름 뜻 더 보기</a>
+      </details></li>`;
+  }
+
+  function showMore() {
+    const next = recs.slice(shown, shown + 10);
+    list.insertAdjacentHTML('beforeend', next.map((r, i) => cardHtml(r, shown + i)).join(''));
+    shown += next.length;
+    more.hidden = shown >= recs.length;
+  }
+
+  function run(surname: string, gender: 'M' | 'F', style: 'all' | 'hanja' | 'pure', need: Need | null) {
+    recs = recommend(surname, gender, need, style);
+    shown = 0;
+    list.innerHTML = '';
+    const top = recs[0];
+    const kid = gender === 'M' ? '아들' : '딸';
+    document.getElementById('bn-summary')!.innerHTML = `<h2 class="card-title">${e(surname)}씨 ${kid} 이름 추천</h2>
+      <p class="mt-2 text-[15px] leading-relaxed text-ink-2">${
+        need
+          ? `아기 사주에 부족한 기운은 <b class="text-ink">${el(need.first)}</b>, 함께 채우면 좋은 기운은 <b class="text-ink">${el(need.second)}</b>${(ELEMENTS[need.second].name.charCodeAt(ELEMENTS[need.second].name.length - 1) - 0xac00) % 28 ? '이에요' : '예요'}. 이 기운을 가진 한자를 먼저 골랐어요.`
+          : '생일 없이 소리오행과 뜻을 기준으로 골랐어요. 생일을 넣으면 사주에 맞는 한자로 바뀌어요.'
+      } 점수는 소리오행 조화와 사주 보완을 합친 추천 점수예요.</p>`;
+    const card = {
+      kicker: `${surname}씨 ${kid} 이름 추천 1위`,
+      name: top.full,
+      line: top.kind === 'hanja' ? top.meaning : top.pure.story,
+      rows: (top.kind === 'hanja'
+        ? [['한자', `${top.hanja[0].h}(${top.hanja[0].gloss}) ${top.hanja[1].h}(${top.hanja[1].gloss})`], ['소리오행', top.sound.flow]]
+        : [['뜻', top.pure.mean], ['소리오행', top.sound.flow]]) as [string, string][],
+      seal: top.kind === 'hanja' ? top.hanja[0].h + top.hanja[1].h : '名',
+      scene: { chars: gender === 'M' ? ['tiger', 'sheep'] : ['rabbit', 'sheep'], theme: 'love' as const, mood: 'happy' as const },
+    };
+    const cardEl = document.getElementById('bn-card')!;
+    fillTalisman(cardEl, card);
+    document.getElementById('bn-result')!.hidden = false;
+    replayReveal(cardEl);
+    showMore();
+    updateShare(document.getElementById('bn-share')!, {
+      title: `우리 아기 이름 후보 1위는 ${top.full}`,
+      text: '성과 생일만 넣으면 사주에 맞는 아기 이름을 뜻풀이와 함께 추천해 줘요',
+      talisman: { ...card, head: cardEl.querySelector('.t-head')!.textContent!, foot: cardEl.querySelector('.t-foot')!.textContent! },
+    });
+    document.getElementById('bn-summary')!.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    track('test_complete', { test: 'baby-name', result: top.given });
+  }
+
+  form.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const surname = sur.value.trim();
+    if (!surname || !isHangulSyllable(surname)) return void (err.textContent = '성을 한글로 넣어 주세요');
+    let need: Need | null = null;
+    if (useBirth.checked) {
+      if (!birth.value) return void (err.textContent = '아기 생일(예정일)을 넣거나 체크를 풀어 주세요');
+      const [y, m, d] = birth.value.split('-').map(Number);
+      const s = calcSaju({ y, m, d, cal: 'solar', leap: false, t: -1 });
+      if (typeof s === 'string') return void (err.textContent = s);
+      const [a, b] = luckyElements(s);
+      need = { first: a, second: b, over: s.strongest };
+    }
+    err.textContent = '';
+    const gender = val('bn-g') as 'M' | 'F';
+    const style = val('bn-style') as 'all' | 'hanja' | 'pure';
+    openGate({
+      name: `${surname}씨 아기의 `,
+      label: '이름을 고르고 있어요',
+      doneLabel: '추천 이름이 준비됐어요',
+      steps: ['아기 사주를 세우는 중', '부족한 오행을 찾는 중', '어울리는 한자를 고르는 중', '소리오행을 맞춰 보는 중'],
+      chars: ['sheep', 'owl'],
+      onDone: () => run(surname, gender, style, need),
+      test: 'baby-name',
+    });
+  });
+  more.addEventListener('click', showMore);
+  document.getElementById('bn-again')!.addEventListener('click', () => {
+    document.getElementById('bn-result')!.hidden = true;
+    form.scrollIntoView({ behavior: 'smooth' });
+  });
+</script>

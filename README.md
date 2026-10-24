@@ -19,10 +19,18 @@
 | `/mbti-match/`, `/mbti-match/enfp-intj/` 등 | MBTI 궁합표와 궁합 상세 136페이지 |
 | `/test/mbti/` `/test/animal/` | 질문형 테스트, 유형별 결과 페이지 |
 | `/mbti/`, `/mbti/{유형}/` | MBTI 16유형 해설 |
-| `/me/` | 내 정보 (생년월일 저장, 최대 6명) |
+| `/saju-mbti/` → `/saju-mbti/result/` | 사주 MBTI 싱크로율 (사주로 본 MBTI와 실제 MBTI 비교) |
+| `/ilju/`, `/ilju/gyeongjin/` 등 | 60갑자 일주 도감 60페이지 ('흰 용 일주' 같은 별명, 성격, 연애, 직업, 궁합 일주) |
+| `/zodiac/today/` | 오늘의 띠별 운세 순위 (매일 자정 갱신, 내일 순위 미리 보기) |
+| `/baby-name/`, `/baby-name/seojun/` 등 | 아기 이름 짓기 (사주 보완 한자, 순우리말, 이름 뜻 페이지 89개) |
+| `/bujeok/` | 소원 부적 만들기 (휴대폰 배경화면 9:16 이미지) |
+| `/dream/`, `/dream/snake/` 등 | 꿈해몽 사전 50가지 (검색, 분류, 상황별 풀이) |
+| `/guide/`, `/guide/samjae/` 등 | 사주 백과 10편 (애드센스 심사와 검색 유입용 해설 글) |
+| `/gunghap/?invite=…` | 궁합 초대장 링크 (보낸 사람 정보가 담긴 링크, 받은 사람은 자기 정보만 입력) |
+| `/me/` | 내 정보 (생년월일 저장, 최대 6명, 궁합 초대장 보내기) |
 | `/category/...` | 카테고리 모아 보기 |
 | `/about/` `/privacy/` `/terms/` `/contact/` | 애드센스 승인에 필요한 정책 페이지 |
-| `/og/...png` | 카톡 공유 미리보기 이미지 260장 (빌드할 때 캐릭터 그림과 함께 자동 생성) |
+| `/og/...png` | 카톡 공유 미리보기 이미지 약 330장 (빌드할 때 캐릭터 그림과 함께 자동 생성) |
 | `/sitemap-index.xml` `/robots.txt` `/rss.xml` | 검색 등록용 |
 
 입력 → '분석 중' 화면(광고 자리 포함, 약 4초) → 결과 페이지 순서로 움직여요. 결과는 주소가 따로 있는 페이지라서 '결과 보기'를 누를 때 애드센스 전면 광고(비네트)가 나올 수 있어요.
@@ -95,6 +103,12 @@ npm run dev
 | 홈 메뉴와 목록, 순서 | `src/data/catalog.ts` |
 | 운세, 신년운세, 사주, 궁합 풀이 문장 | `src/data/reading.ts` |
 | 풀이를 고르는 규칙(점수, 별점) | `src/lib/saju.ts`, `src/lib/reading.ts` |
+| 꿈해몽 추가, 수정 | `src/data/dreams.ts` |
+| 사주 백과 글 추가, 수정 | `src/data/guide.ts` |
+| 소원 부적 종류와 문구 | `src/data/bujeok.ts` |
+| 아기 이름 후보, 한자, 뜻 | `src/data/baby-names.ts` (한자는 부수가 오행에 분명히 속하는 글자만) |
+| 사주 MBTI 계산 기준과 문장 | `src/lib/saju-mbti.ts` |
+| 일주 도감 문장 | `src/lib/ilju.ts`, `src/data/reading-more.ts` |
 | 신년운세 연도 (2029년 추가 등) | `src/data/reading.ts`의 `YEARS`, `DEFAULT_YEAR`, `YEAR_INFO` |
 | 캐릭터 그림 | `src/art/characters.ts` (SVG) |
 | 메뉴 아이콘 | `src/art/icons.ts` |

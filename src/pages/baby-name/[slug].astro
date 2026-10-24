@@ -1,0 +1,103 @@
+---
+import Base from '../../layouts/Base.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import Faq from '../../components/Faq.astro';
+import Related from '../../components/Related.astro';
+import Disclaimer from '../../components/Disclaimer.astro';
+import ShareBar from '../../components/ShareBar.astro';
+import { ALL_NAME_PAGES, hanjaCombos, bestSurnames, soundHarmony } from '../../lib/baby-name';
+import { PURE_NAMES } from '../../data/baby-names';
+import { ELEMENTS } from '../../data/saju';
+import { sceneSvg } from '../../art/characters';
+import { iconSvg } from '../../art/icons';
+import { faqLd } from '../../lib/seo';
+import { josa } from '../../lib/hangul';
+
+export function getStaticPaths() {
+  return ALL_NAME_PAGES.map((x) => ({ params: { slug: x.slug }, props: { x } }));
+}
+const { x } = Astro.props as { x: (typeof ALL_NAME_PAGES)[number] };
+const path = `/baby-name/${x.slug}/`;
+const N = x.given;
+const eun = N + josa(N, '은', '는');
+const gwa = N + josa(N, '과', '와');
+const irado = N + josa(N, '이라도', '라도');
+const gLabel = x.g === 'M' ? '남자아이' : x.g === 'F' ? '여자아이' : '남녀 모두';
+const combos = x.kind === 'hanja' ? hanjaCombos(x.given) : [];
+const pure = x.kind === 'pure' ? PURE_NAMES.find((p) => p.name === x.given)! : null;
+const sur = bestSurnames(x.given);
+const sound = soundHarmony(x.given);
+const el = (k: keyof typeof ELEMENTS) => `${ELEMENTS[k].name}(${ELEMENTS[k].hanja})`;
+const same = ALL_NAME_PAGES.filter((y) => y.slug !== x.slug && (y.g === x.g || y.g === 'U' || x.g === 'U') && y.kind === x.kind).slice(0, 12);
+const faq = [
+  x.kind === 'hanja'
+    ? { q: `${x.given} 이름은 무슨 뜻인가요?`, a: `${eun} 한자에 따라 뜻이 달라져요. 예를 들어 ${combos[0].h1.h}${combos[0].h2.h}(${combos[0].h1.gloss}, ${combos[0].h2.gloss})로 쓰면 ${combos[0].meaning}` }
+    : { q: `${x.given} 이름은 무슨 뜻인가요?`, a: `순우리말 이름으로 "${pure!.mean}"${josa(pure!.mean, "이라는", "라는")} 뜻이에요. ${pure!.story}` },
+  { q: `${gwa} 잘 어울리는 성은?`, a: `소리오행으로 보면 ${sur.map((s) => s + x.given).join(', ')}처럼 부를 때 첫소리 흐름이 자연스러워요.` },
+  { q: `${eun} 남자 이름인가요, 여자 이름인가요?`, a: `요즘은 주로 ${gLabel} 이름으로 많이 써요.` },
+];
+---
+
+<Base
+  title={`${x.given} 이름 뜻${x.kind === 'hanja' ? ', 한자 풀이' : ', 순우리말 이름'}`}
+  description={x.kind === 'hanja' ? `${x.given} 이름 뜻과 한자 풀이. ${combos.map((c) => c.h1.h + c.h2.h).join(', ')} 등 한자 조합별 뜻, 소리오행, 잘 어울리는 성까지 정리했어요.` : `순우리말 이름 ${x.given}의 뜻은 "${pure!.mean}". 이름에 담긴 의미와 소리오행, 잘 어울리는 성을 정리했어요.`}
+  ogImage="/og/test-baby-name.png"
+  crumbs={[{ name: '아기 이름 짓기', path: '/baby-name/' }, { name: `${x.given} 이름 뜻`, path }]}
+  jsonLd={[faqLd(faq)]}
+  back="/baby-name/"
+  headerTitle="아기 이름"
+>
+  <div class="col pt-2">
+    <section class="card text-center">
+      <span class="mx-auto block h-36 w-36" set:html={sceneSvg({ chars: [x.g === 'F' ? 'rabbit' : x.g === 'M' ? 'tiger' : 'sheep'], theme: 'love' })} />
+      <p class="mt-1 text-[14px] font-semibold text-ink-2">{gLabel} 이름{x.kind === 'pure' ? ', 순우리말' : ''}</p>
+      <h1 class="font-display mt-1 text-[34px] leading-tight font-extrabold">{x.given} 이름 뜻</h1>
+      <p class="mt-3 text-[16px] leading-relaxed">{x.kind === 'hanja' ? combos[0].meaning : `"${pure!.mean}" ${pure!.story}`}</p>
+    </section>
+
+    {
+      x.kind === 'hanja' && (
+        <section class="card reading-block">
+          <div class="reading-head"><span class="ico" set:html={iconSvg('book', 28)} /><h2 class="flex-1">한자 조합별 뜻</h2></div>
+          <p class="mt-2 text-[14.5px] text-ink-2">같은 {irado} 어떤 한자를 쓰느냐에 따라 뜻과 오행이 달라져요.</p>
+          <ul class="mt-3 space-y-3">
+            {combos.map((c) => (
+              <li class="rounded-[14px] bg-[var(--wash)] px-4 py-3">
+                <p class="flex items-baseline gap-2"><span class="font-display text-[24px]">{c.h1.h}{c.h2.h}</span><span class="text-[14px] text-ink-2">{c.h1.gloss}, {c.h2.gloss}</span></p>
+                <p class="mt-1 text-[15px] leading-relaxed">{c.meaning}</p>
+                <p class="mt-1 text-[13px] text-ink-3">부수 오행 {el(c.h1.el)}, {el(c.h2.el)}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <AdSlot name="result-top" />
+
+    <section class="card reading-block">
+      <div class="reading-head"><span class="ico" set:html={iconSvg('ohaeng', 28)} /><h2 class="flex-1">소리오행과 어울리는 성</h2></div>
+      <p class="mt-2 text-[15px]"><b>이름 소리오행</b> {sound.flow}</p>
+      <p class="mt-2 text-[15px] leading-relaxed">첫소리를 오행으로 나누면 ㄱㅋ은 나무, ㄴㄷㄹㅌ은 불, ㅇㅎ은 흙, ㅅㅈㅊ은 쇠, ㅁㅂㅍ은 물이에요. 성의 첫소리와 이름 첫소리가 서로 살려 주는 관계면 부르기 좋은 이름으로 봐요.</p>
+      <p class="mt-3 text-[14px] font-bold text-ink-2">{gwa} 소리가 잘 어울리는 성</p>
+      <div class="mt-2 flex flex-wrap gap-1.5">{sur.map((s) => <span class="chip">{s + x.given}</span>)}</div>
+    </section>
+
+    <section class="card">
+      <ShareBar title={`${x.given} 이름 뜻`} text="아기 이름 뜻과 한자 풀이, 사주로 이름 추천까지" path={path} ctaPath="/baby-name/" ogImage="/og/test-baby-name.png" campaign="baby-name" />
+      <a href="/baby-name/" class="btn btn-hwang btn-block mt-4">우리 아기 사주로 이름 추천받기</a>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">비슷한 이름 뜻 보기</h2>
+      <div class="mt-3 flex flex-wrap gap-1.5">{same.map((y) => <a href={`/baby-name/${y.slug}/`} class="chip">{y.given}</a>)}</div>
+    </section>
+
+    <section class="card">
+      <h2 class="card-title">자주 묻는 질문</h2>
+      <Faq items={faq} />
+    </section>
+    <Related id="baby-name" />
+    <Disclaimer />
+  </div>
+</Base>

@@ -13,7 +13,7 @@ import { samjae, yearPillar } from '../lib/saju';
 import { DREAMS } from '../data/dreams';
 import { GUIDES } from '../data/guide';
 
-const menu = ['newyear', 'fortune-today', 'fortune-tomorrow', 'saju', 'gunghap', 'saju-mbti', 'ilju', 'bujeok', 'dream', 'zodiac-today', 'ohaeng', 'fortune-date'].map(catalogById);
+const menu = ['newyear', 'fortune-today', 'fortune-tomorrow', 'saju', 'gunghap', 'saju-mbti', 'ilju', 'bujeok', 'dream', 'zodiac-today', 'ohaeng', 'baby-name'].map(catalogById);
 const popularDreams = ['snake', 'pig', 'teeth', 'poop', 'death', 'ex', 'money', 'chased'].map((s) => DREAMS.find((d) => d.slug === s)!);
 const tests = ['animal', 'mbti-test', 'group', 'mbti-match', 'name-mbti', 'mbti-types'].map(catalogById);
 const loves = byCategory('love');
@@ -44,6 +44,14 @@ const banners = [
     sub: '생일과 MBTI로 보는 싱크로율',
     bg: '#dff1e4',
     art: sceneSvg({ chars: ['fox', 'owl'], theme: 'work', plain: true }),
+  },
+  {
+    href: '/baby-name/',
+    chip: 'NEW 아기 이름',
+    title: '사주에 꼭 맞는 우리 아기 이름',
+    sub: '한자 뜻풀이와 순우리말 이름까지',
+    bg: '#ffe4d6',
+    art: sceneSvg({ chars: ['sheep', 'rabbit'], theme: 'love', plain: true }),
   },
   {
     href: '/bujeok/',
